@@ -5,17 +5,6 @@ import requests
 import ping_error
 from status_checker import status_checker
 
-from telethon import TelegramClient
-from telethon.tl.functions.messages import (GetHistoryRequest)
-import asyncio
-from telethon.tl.types import (PeerChannel)
-from telethon.errors import SessionPasswordNeededError
-
-OFFSET_ID = 0
-LIMIT = 100
-MESSAGES = []
-NB_MESSAGES = 0
-TCL = 0
 def get_config():
     with open("config.yml", "r") as file:
         config = yaml.safe_load(file)
