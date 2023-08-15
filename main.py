@@ -1,19 +1,15 @@
 from telegram import *
 
+import signal
+import sys
+
+
 def main():
-    config = get_config()
-    """
-    client = create_telegram_instance(config)
-    print('instance created')
-    channel = get_channel(client)
-    print("channel created")
-    """
-    last_message = get_last_message()
-    print(last_message)
-    print(last_message["message"]["text"])
-
-
+    while True:
+        telegram_run()
+        time.sleep(5)
 
 
 if __name__ == '__main__':
+    #signal.signal(signal.SIGTERM, sys.exit())
     main()

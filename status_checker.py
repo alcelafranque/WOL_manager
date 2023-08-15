@@ -1,12 +1,17 @@
 import os
+import time
 
+NB_TRY = 6
 
-def status_checker():
-    turned_off = get_status()
-    return True if turned_off else False
+def status_checker(ip):
+    nb_try = 0
+    time.sleep(30)
+    while not get_status(ip) and nb_try < NB_TRY:
+        time.sleep(1)
+        nb_try += 1
+    return True if nb_try < NB_TRY else False
 
-
-def get_status():
-    output = os.system("ping -c 4 -q 10.240.128.69")
+def get_status(ip):
+    output = os.system("ping -c 1 -q " + ip)
     print(output)
     return True if output == 0 else False

@@ -1,2 +1,0 @@
-class PingError(Exception):
-    pass
