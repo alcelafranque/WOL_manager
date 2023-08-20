@@ -1,6 +1,7 @@
 import json
 import yaml
 import requests
+import re
 
 import errors
 from wake_me_up import *
@@ -30,6 +31,15 @@ def is_a_new_message(latest_message):
     print(str(latest_message["message"]["date"]))
     return True if timestamp1 != str(latest_message["message"]["date"]) else False
 
+
+def is_a_valid_add_message(message_text):
+    splited_message = message_text.split(" ")
+    print(splited_message[3])
+    return True if re.match(r"([0123456789a-fA-F]{2}:){5}[0123456789a-fA-F]{2}", splited_message[3]) else False
+
+
+
+
 def telegram_run():
     config = get_config()
     ip = config["ip"]
@@ -45,6 +55,7 @@ def telegram_run():
         wake_me_up(mac)
         refresh_arp_table(ip)
         ip = get_new_ip(mac)
+        timestamps = str(last_message["message"]["date"])
         if not get_status(ip):
             started = status_checker(ip)
 
@@ -54,11 +65,14 @@ def telegram_run():
             else:
                 text = "done"
                 send_bot_message(bot_id, id, text)
-                timestamps = str(last_message["message"]["date"])
                 with open("saving_last_timestamps", "w") as timestamp_file:
                     timestamp_file.write(timestamps)
 
         else:
             text = "already up"
             send_bot_message(bot_id, id, text)
+            with open("saving_last_timestamps", "w") as timestamp_file:
+                timestamp_file.write(timestamps)
+    elif re.match(r"/add @wolol_bot [^\s]+ [^\s]+", last_message['message']['text']):
+        if is_a_valid_add_message(last_message['message']['text']):
 
