@@ -1,7 +1,5 @@
-hash: "e755e30d19b67d63868f092f86e5c724"
 id: "-854544886"
 bot_id: "5886610488:AAG711fMlHlbCByixJo0SUMe2MXgHuX-7Fk"
-phone: "+33782532692"
-username: "lucas morini"
 ip: "10.240.128.0"
 mac: "A8-A1-59-51-71-6A"
+name_to_mac_file: "name_to_mac.json"
