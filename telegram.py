@@ -8,6 +8,8 @@ from wake_me_up import *
 
 from status_checker import *
 
+last_instruction = None
+
 def get_config():
     with open("config.yml", "r") as file:
         config = yaml.safe_load(file)
@@ -34,45 +36,104 @@ def is_a_new_message(latest_message):
 
 def is_a_valid_add_message(message_text):
     splited_message = message_text.split(" ")
-    print(splited_message[3])
-    return True if re.match(r"([0123456789a-fA-F]{2}:){5}[0123456789a-fA-F]{2}", splited_message[3]) else False
+    print(splited_message[2])
+    return True if re.match(r"([0123456789a-fA-F]{2}:){5}[0123456789a-fA-F]{2}", splited_message[2]) else False
+
+def store_new_name_mac_pair(message, filename):
+    splitted_message = message.split(" ")
+    if not os.path.isfile(filename):
+        with open(filename, "w"):
+            pass
+        name_to_mac = {}
+    else:
+        with open(filename, "r") as file1:
+            try:
+                name_to_mac = json.loads(file1.read())
+            except json.decoder.JSONDecodeError:
+                name_to_mac = {}
+    name_to_mac[splitted_message[1]] = splitted_message[2]
+    print(name_to_mac)
+    with open(filename, 'w') as file1:
+        file1.write(json.dumps(name_to_mac))
+
+def get_devices(filename):
+    with open(filename) as file1:
+        all_pairs = json.loads(file1.read())
+    return [k for k in all_pairs.keys()]
 
 
+def get_mac_from_name(name, filename):
+    with open(filename, "r") as file1:
+        name_to_mac = json.loads(file1.read())
+    try:
+        return name_to_mac[name]
+    except:
+        return None
 
+def delete_mac_from_name(name, filename):
+    with open(filename, "r") as file1:
+        name_to_mac = json.loads(file1.read())
+    if name in name_to_mac.keys():
+        del name_to_mac[name]
+    with open(filename, "w") as file1:
+        file1.write(json.dumps(name_to_mac))
 
 def telegram_run():
+    global last_instruction
     config = get_config()
     ip = config["ip"]
-    mac = config["mac"]
     id = config["id"]
     bot_id = config["bot_id"]
+    name_to_mac_file = config["name_to_mac_file"]
     last_message = get_last_message(bot_id)
     print(last_message)
     print(last_message["message"]["text"])
 
-    if last_message['message']["text"] == "/start @wolol_bot" and is_a_new_message(last_message):
+    if re.match(r"/start.*", last_message["message"]["text"]) and is_a_new_message(last_message):
+        last_instruction = "start"
+        if len(last_message["message"]["text"].split(" ")) == 2:
+            device_name = last_message["message"]["text"].split(" ")[1]
+            mac = get_mac_from_name(device_name, name_to_mac_file)
+            if not mac:
+                send_bot_message(bot_id, id, "ERROR: device_name_not_in_database send /devices to print known devices")
+            wake_me_up(mac)
+            refresh_arp_table(ip)
+            ip = get_new_ip(mac)
+            timestamps = str(last_message["message"]["date"])
+            if not get_status(ip):
+                started = status_checker(ip)
 
-        wake_me_up(mac)
-        refresh_arp_table(ip)
-        ip = get_new_ip(mac)
-        timestamps = str(last_message["message"]["date"])
-        if not get_status(ip):
-            started = status_checker(ip)
-
-            if not started:
-                text = "not started in due time"
-                send_bot_message(bot_id, id, text)
+                if not started:
+                    text = "not started in due time"
+                    send_bot_message(bot_id, id, text)
+                else:
+                    text = "done"
+                    send_bot_message(bot_id, id, text)
+                    with open("saving_last_timestamps", "w") as timestamp_file:
+                        timestamp_file.write(timestamps)
             else:
-                text = "done"
+                text = "already up"
                 send_bot_message(bot_id, id, text)
                 with open("saving_last_timestamps", "w") as timestamp_file:
                     timestamp_file.write(timestamps)
 
-        else:
-            text = "already up"
-            send_bot_message(bot_id, id, text)
-            with open("saving_last_timestamps", "w") as timestamp_file:
-                timestamp_file.write(timestamps)
-    elif re.match(r"/add @wolol_bot [^\s]+ [^\s]+", last_message['message']['text']):
+    elif re.match(r"/add [^\s]+ [^\s]+", last_message['message']['text']):
+        last_instruction = "add"
         if is_a_valid_add_message(last_message['message']['text']):
+            store_new_name_mac_pair(last_message["message"]["text"], name_to_mac_file)
+            send_bot_message(bot_id,id, "Successfully Added")
+        else:
+            text = "ERROR: bad_message_format example: /add router_test a1:b6:23:dc:ff:99"
+            send_bot_message(bot_id, id, text)
 
+    elif re.match(r"/devices", last_message["message"]["text"]) and not last_instruction == "devices":
+        last_instruction = "devices"
+        send_bot_message(bot_id, id, get_devices(name_to_mac_file))
+
+    elif re.match(r"/delete [^\s]+", last_message['message']['text']):
+        last_instruction = "delete"
+        delete_mac_from_name(last_message['message']['text'].split(" ")[1], name_to_mac_file)
+    elif re.match(r"/help", last_message["message"]["text"])and not last_instruction == "help":
+        last_instruction = "help"
+        text = "/add DEVICE_NAME DEVICE_MAC\n\n/delete DEVICE_NAME\n\n/devices\n\n/start DEVICE_NAME"
+        send_bot_message(bot_id, id, text)
