@@ -6,3 +6,6 @@ class FailedToStart(Exception):
 
 class NotFoundIp(Exception):
     pass
+
+class NoResultFound(Exception):
+    pass
