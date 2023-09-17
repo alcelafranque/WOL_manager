@@ -8,23 +8,32 @@ from wake_me_up import *
 
 from status_checker import *
 
+from errors import *
+
 last_instruction = None
+
 
 def get_config():
     with open("config.yml", "r") as file:
         config = yaml.safe_load(file)
     return config
 
+
 def get_last_message(bot_id):
-    api_url = "https://api.telegram.org/bot{}/getUpdates".format(bot_id)
+    api_url = f"https://api.telegram.org/bot{bot_id}/getUpdates"
     messages = requests.get(api_url, timeout=10).text
     messages = json.loads(messages)
-    return messages["result"][-1]
+    if messages["result"]:
+        return messages["result"][-1]
+    else:
+        raise(NoResultFound)
+
 
 def send_bot_message(bot_id, id, text):
     url_sending_message = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}'.format(bot_id, id, text)
     print(url_sending_message)
     requests.get(url_sending_message)
+
 
 def is_a_new_message(latest_message):
     with open("saving_last_timestamps", "r") as former_timestamp:
@@ -38,6 +47,7 @@ def is_a_valid_add_message(message_text):
     splited_message = message_text.split(" ")
     print(splited_message[2])
     return True if re.match(r"([0123456789a-fA-F]{2}:){5}[0123456789a-fA-F]{2}", splited_message[2]) else False
+
 
 def store_new_name_mac_pair(message, filename):
     splitted_message = message.split(" ")
@@ -56,6 +66,7 @@ def store_new_name_mac_pair(message, filename):
     with open(filename, 'w') as file1:
         file1.write(json.dumps(name_to_mac))
 
+
 def get_devices(filename):
     with open(filename) as file1:
         all_pairs = json.loads(file1.read())
@@ -70,6 +81,7 @@ def get_mac_from_name(name, filename):
     except:
         return None
 
+
 def delete_mac_from_name(name, filename):
     with open(filename, "r") as file1:
         name_to_mac = json.loads(file1.read())
@@ -77,6 +89,7 @@ def delete_mac_from_name(name, filename):
         del name_to_mac[name]
     with open(filename, "w") as file1:
         file1.write(json.dumps(name_to_mac))
+
 
 def telegram_run():
     global last_instruction
@@ -101,7 +114,7 @@ def telegram_run():
             ip = get_new_ip(mac)
             timestamps = str(last_message["message"]["date"])
             if not get_status(ip):
-                started = status_checker(ip)
+                started = status_checker(ip, config["starting_time"])
 
                 if not started:
                     text = "not started in due time"
@@ -117,8 +130,8 @@ def telegram_run():
                 with open("saving_last_timestamps", "w") as timestamp_file:
                     timestamp_file.write(timestamps)
 
-    elif re.match(r"/add [^\s]+ [^\s]+", last_message['message']['text']):
-        last_instruction = "add"
+    elif re.match(r"/add [^\s]+ [^\s]+", last_message['message']['text']) and last_instruction != last_message["message"]['text']:
+        last_instruction = last_message["message"]["text"]
         if is_a_valid_add_message(last_message['message']['text']):
             store_new_name_mac_pair(last_message["message"]["text"], name_to_mac_file)
             send_bot_message(bot_id,id, "Successfully Added")
@@ -133,6 +146,7 @@ def telegram_run():
     elif re.match(r"/delete [^\s]+", last_message['message']['text']):
         last_instruction = "delete"
         delete_mac_from_name(last_message['message']['text'].split(" ")[1], name_to_mac_file)
+
     elif re.match(r"/help", last_message["message"]["text"])and not last_instruction == "help":
         last_instruction = "help"
         text = "/add DEVICE_NAME DEVICE_MAC\n\n/delete DEVICE_NAME\n\n/devices\n\n/start DEVICE_NAME"

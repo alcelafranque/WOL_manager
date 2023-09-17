@@ -3,9 +3,9 @@ import time
 
 NB_TRY = 6
 
-def status_checker(ip):
+def status_checker(ip, starting_time):
     nb_try = 0
-    time.sleep(30)
+    time.sleep(starting_time)
     while not get_status(ip) and nb_try < NB_TRY:
         time.sleep(1)
         nb_try += 1

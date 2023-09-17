@@ -5,8 +5,15 @@ import subprocess
 import os
 from errors import NotFoundIp
 
+
 def wake_me_up(mac):
-    send_magic_packet(mac)
+    mac = mac.split(":")
+    new_mac = ""
+    for subpart in mac:
+        new_mac += subpart + "-"
+    print(new_mac)
+    send_magic_packet(new_mac[:-1])
+
 
 def refresh_arp_table(ip):
     ip = ip.split(".")
@@ -18,9 +25,11 @@ def refresh_arp_table(ip):
     for p in t:
         p.join()
 
+
 def ping_target(_, ip):
     instr = "ping -c 1 " + ip + _ + " > /dev/null"
     os.system(instr)
+
 
 def get_new_ip(mac):
     mac = format_mac(mac)

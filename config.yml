@@ -3,3 +3,4 @@ bot_id: "5886610488:AAG711fMlHlbCByixJo0SUMe2MXgHuX-7Fk"
 ip: "10.240.128.0"
 mac: "A8-A1-59-51-71-6A"
 name_to_mac_file: "name_to_mac.json"
+starting_time: 30
