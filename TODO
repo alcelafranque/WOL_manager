@@ -1,3 +1,13 @@
+Webhook telegram
+
 Lancement et gestion seule
 
-Problème temps d'attente pour le démarrage
+Temps d'attente pour le démarrage
+
+Choix d'interfaces pour les magic packets
+
+Plusieurs réseaux donc l'ajout
+
+Faire un logger
+
+Ajouter un checker pour une certaine a=machine
