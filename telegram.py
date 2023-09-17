@@ -90,6 +90,10 @@ def delete_mac_from_name(name, filename):
     with open(filename, "w") as file1:
         file1.write(json.dumps(name_to_mac))
 
+def store_timestamps(last_message):
+    timestamps = str(last_message["message"]["date"])
+    with open("saving_last_timestamps", "w") as timestamp_file:
+        timestamp_file.write(timestamps)
 
 def telegram_run():
     global last_instruction
@@ -103,7 +107,6 @@ def telegram_run():
     print(last_message["message"]["text"])
 
     if re.match(r"/start.*", last_message["message"]["text"]) and is_a_new_message(last_message):
-        last_instruction = "start"
         if len(last_message["message"]["text"].split(" ")) == 2:
             device_name = last_message["message"]["text"].split(" ")[1]
             mac = get_mac_from_name(device_name, name_to_mac_file)
@@ -112,7 +115,6 @@ def telegram_run():
             wake_me_up(mac)
             refresh_arp_table(ip)
             ip = get_new_ip(mac)
-            timestamps = str(last_message["message"]["date"])
             if not get_status(ip):
                 started = status_checker(ip, config["starting_time"])
 
@@ -122,16 +124,13 @@ def telegram_run():
                 else:
                     text = "done"
                     send_bot_message(bot_id, id, text)
-                    with open("saving_last_timestamps", "w") as timestamp_file:
-                        timestamp_file.write(timestamps)
+                    store_timestamps(last_message)
             else:
                 text = "already up"
                 send_bot_message(bot_id, id, text)
-                with open("saving_last_timestamps", "w") as timestamp_file:
-                    timestamp_file.write(timestamps)
+                store_timestamps(last_message)
 
-    elif re.match(r"/add [^\s]+ [^\s]+", last_message['message']['text']) and last_instruction != last_message["message"]['text']:
-        last_instruction = last_message["message"]["text"]
+    elif re.match(r"/add [^\s]+ [^\s]+", last_message['message']['text']) and is_a_new_message(last_message):
         if is_a_valid_add_message(last_message['message']['text']):
             store_new_name_mac_pair(last_message["message"]["text"], name_to_mac_file)
             send_bot_message(bot_id,id, "Successfully Added")
@@ -139,15 +138,15 @@ def telegram_run():
             text = "ERROR: bad_message_format example: /add router_test a1:b6:23:dc:ff:99"
             send_bot_message(bot_id, id, text)
 
-    elif re.match(r"/devices", last_message["message"]["text"]) and not last_instruction == "devices":
-        last_instruction = "devices"
+    elif re.match(r"/devices", last_message["message"]["text"]) and is_a_new_message(last_message):
         send_bot_message(bot_id, id, get_devices(name_to_mac_file))
+        store_timestamps(last_message)
 
     elif re.match(r"/delete [^\s]+", last_message['message']['text']):
-        last_instruction = "delete"
         delete_mac_from_name(last_message['message']['text'].split(" ")[1], name_to_mac_file)
+        store_timestamps(last_message)
 
-    elif re.match(r"/help", last_message["message"]["text"])and not last_instruction == "help":
-        last_instruction = "help"
+    elif re.match(r"/help", last_message["message"]["text"]) and is_a_new_message(last_message):
         text = "/add DEVICE_NAME DEVICE_MAC\n\n/delete DEVICE_NAME\n\n/devices\n\n/start DEVICE_NAME"
         send_bot_message(bot_id, id, text)
+        store_timestamps(last_message)
