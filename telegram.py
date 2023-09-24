@@ -107,28 +107,28 @@ def telegram_run():
     print(last_message["message"]["text"])
 
     if re.match(r"/start.*", last_message["message"]["text"]) and is_a_new_message(last_message):
-        if len(last_message["message"]["text"].split(" ")) == 2:
-            device_name = last_message["message"]["text"].split(" ")[1]
-            mac = get_mac_from_name(device_name, name_to_mac_file)
-            if not mac:
-                send_bot_message(bot_id, id, "ERROR: device_name_not_in_database send /devices to print known devices")
-            wake_me_up(mac)
-            refresh_arp_table(ip)
-            ip = get_new_ip(mac)
-            if not get_status(ip):
-                started = status_checker(ip, config["starting_time"])
+        message_text = last_message["message"]["text"].split(" ")
+        starting_time = message_text[-1] if message_text[-1].isdigit() else 30
+        device_name = message_text[1]
+        mac = get_mac_from_name(device_name, name_to_mac_file)
+        if not mac:
+            send_bot_message(bot_id, id, "ERROR: device_name_not_in_database send /devices to print known devices")
+        refresh_arp_table(ip)
+        wake_me_up(mac)
+        if not get_status(ip):
+            started = status_checker(mac, starting_time)
 
-                if not started:
-                    text = "not started in due time"
-                    send_bot_message(bot_id, id, text)
-                else:
-                    text = "done"
-                    send_bot_message(bot_id, id, text)
-                    store_timestamps(last_message)
+            if not started:
+                text = "not started in due time"
+                send_bot_message(bot_id, id, text)
             else:
-                text = "already up"
+                text = "done"
                 send_bot_message(bot_id, id, text)
                 store_timestamps(last_message)
+        else:
+            text = "already up"
+            send_bot_message(bot_id, id, text)
+            store_timestamps(last_message)
 
     elif re.match(r"/add [^\s]+ [^\s]+", last_message['message']['text']) and is_a_new_message(last_message):
         if is_a_valid_add_message(last_message['message']['text']):
@@ -147,6 +147,6 @@ def telegram_run():
         store_timestamps(last_message)
 
     elif re.match(r"/help", last_message["message"]["text"]) and is_a_new_message(last_message):
-        text = "/add DEVICE_NAME DEVICE_MAC\n\n/delete DEVICE_NAME\n\n/devices\n\n/start DEVICE_NAME"
+        text = "/add DEVICE_NAME DEVICE_MAC\n\n/delete DEVICE_NAME\n\n/devices\n\n/start DEVICE_NAME STARTING_TIME"
         send_bot_message(bot_id, id, text)
         store_timestamps(last_message)

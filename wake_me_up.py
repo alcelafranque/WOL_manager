@@ -1,7 +1,8 @@
 from wakeonlan import send_magic_packet
 
-import threading
+import re
 import subprocess
+import threading
 import os
 from errors import NotFoundIp
 
@@ -11,14 +12,13 @@ def wake_me_up(mac):
     new_mac = ""
     for subpart in mac:
         new_mac += subpart + "-"
-    print(new_mac)
     send_magic_packet(new_mac[:-1])
 
 
 def refresh_arp_table(ip):
     ip = ip.split(".")
     ip = str(ip[0]) + "." + str(ip[1]) + "." + str(ip[2]) + "."
-    print("refreshing")
+    print("Refreshing arp table ")
     t = [threading.Thread(target=ping_target, args=(str(_), ip)) for _ in range(1, 256)]
     for p in t:
         p.start()
@@ -36,9 +36,12 @@ def get_new_ip(mac):
     arp_result = str(subprocess.check_output(["arp", "-a"])).split("\\n")
     for result in arp_result:
         fields = result.split(" ")
-        if len(fields) > 3:
-            if fields[3] == mac:
-                return reformat_mac(fields[1])
+        # Change for if mac in fields
+        if mac in fields:
+            for field in fields:
+                regex_ip = "^(\(?(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\)?)$"
+                if re.match(regex_ip, field):
+                    return field[1:-1]
     raise NotFoundIp("mac not found in arp table")
 
 
@@ -47,7 +50,6 @@ def format_mac(mac):
     formated_mac = ""
     for elem in mac:
         formated_mac += elem.lower() + ":"
-    print(formated_mac[:-1])
     return formated_mac[:-1]
 
 
@@ -56,5 +58,4 @@ def reformat_mac(mac):
     formated_mac = ""
     for elem in mac:
         formated_mac += elem.upper() + "-"
-    print(formated_mac[:-1])
     return formated_mac[1:-2]
