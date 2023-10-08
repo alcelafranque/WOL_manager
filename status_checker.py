@@ -24,6 +24,7 @@ def status_checker(mac, starting_time, mdp, ssh_filename):
     print("->", ip_neigh_output)
     print(type(ip_neigh_output))
     ssh.close()
+    #FIXME: find a more complex way to check if it successed
     return True if mac.lower() in ip_neigh_output else False
 
 

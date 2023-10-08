@@ -1,8 +1,5 @@
 from telegram import *
 
-import signal
-import sys
-
 
 def main():
     while True:

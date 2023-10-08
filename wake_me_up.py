@@ -1,13 +1,4 @@
-from wakeonlan import send_magic_packet
-from io import StringIO
-
-import os
 import paramiko
-import re
-import subprocess
-import threading
-import sys
-from errors import NotFoundIp
 
 
 def wake_me_up(mac, ssh_filename, mdp):

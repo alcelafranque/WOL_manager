@@ -10,8 +10,6 @@ from status_checker import *
 
 from errors import *
 
-last_instruction = None
-
 
 def get_config():
     with open("config.yml", "r") as file:
@@ -19,14 +17,17 @@ def get_config():
     return config
 
 
-def get_last_message(bot_id):
+def get_last_message(bot_id, nb_try):
     api_url = f"https://api.telegram.org/bot{bot_id}/getUpdates"
     messages = requests.get(api_url, timeout=10).text
     messages = json.loads(messages)
     if messages["result"]:
         return messages["result"][-1]
     else:
-        raise(NoResultFound)
+        nb_try += 1
+        if nb_try == 10:
+            raise(NoResultFound)
+        get_last_message(bot_id)
 
 
 def send_bot_message(bot_id, id, text):
@@ -96,7 +97,7 @@ def store_timestamps(last_message):
         timestamp_file.write(timestamps)
 
 def telegram_run():
-    global last_instruction
+    nb_try = 0
     config = get_config()
     ip = config["ip"]
     id = config["id"]
@@ -104,7 +105,7 @@ def telegram_run():
     bot_id = config["bot_id"]
     ssh_password = config["ssh_password"]
     name_to_mac_file = config["name_to_mac_file"]
-    last_message = get_last_message(bot_id)
+    last_message = get_last_message(bot_id, nb_try)
     print(last_message)
     print(last_message["message"]["text"])
 
