@@ -40,8 +40,10 @@ def retry_get_last_message(bot_id, nb_try):
 def send_bot_message(bot_id, id, text):
     url_sending_message = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}'.format(bot_id, id, text)
     print(url_sending_message)
-    requests.get(url_sending_message)
-
+    try:
+        requests.get(url_sending_message, timeout=2)
+    except requests.exceptions.ReadTimeout:
+        send_bot_message(bot_id, id, text)
 
 def is_a_new_message(latest_message):
     try:
