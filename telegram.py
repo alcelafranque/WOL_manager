@@ -10,8 +10,6 @@ from status_checker import *
 
 from errors import *
 
-last_instruction = None
-
 
 def get_config():
     with open("config.yml", "r") as file:
@@ -19,14 +17,17 @@ def get_config():
     return config
 
 
-def get_last_message(bot_id):
+def get_last_message(bot_id, nb_try):
     api_url = f"https://api.telegram.org/bot{bot_id}/getUpdates"
     messages = requests.get(api_url, timeout=10).text
     messages = json.loads(messages)
     if messages["result"]:
         return messages["result"][-1]
     else:
-        raise(NoResultFound)
+        nb_try += 1
+        if nb_try == 10:
+            raise(NoResultFound)
+        get_last_message(bot_id)
 
 
 def send_bot_message(bot_id, id, text):
@@ -96,13 +97,15 @@ def store_timestamps(last_message):
         timestamp_file.write(timestamps)
 
 def telegram_run():
-    global last_instruction
+    nb_try = 0
     config = get_config()
     ip = config["ip"]
     id = config["id"]
+    ssh_file = config["path_to_private_key"]
     bot_id = config["bot_id"]
+    ssh_password = config["ssh_password"]
     name_to_mac_file = config["name_to_mac_file"]
-    last_message = get_last_message(bot_id)
+    last_message = get_last_message(bot_id, nb_try)
     print(last_message)
     print(last_message["message"]["text"])
 
@@ -113,10 +116,10 @@ def telegram_run():
         mac = get_mac_from_name(device_name, name_to_mac_file)
         if not mac:
             send_bot_message(bot_id, id, "ERROR: device_name_not_in_database send /devices to print known devices")
-        refresh_arp_table(ip)
-        wake_me_up(mac)
+        #refresh_arp_table(ip)
+        wake_me_up(mac, ssh_file, ssh_password)
         if not get_status(ip):
-            started = status_checker(mac, starting_time)
+            started = status_checker(mac, starting_time, ssh_password, ssh_file)
 
             if not started:
                 text = "not started in due time"
