@@ -1,6 +1,6 @@
 stages:
   - run
-image: ubuntu:20.04
+image: registry1.prod1.fbc.int.lac-coloc.fr:5000/image-rsync:latest
 
 run:
   stage: run
