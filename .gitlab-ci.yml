@@ -7,11 +7,14 @@ run:
   script:
     - pwd
     - ls
-    - mkdir ~/.ssh
-    - chmod 700 ~/.ssh
-    - echo "$PRIVKEY" >> ~/.ssh/id_ed25519
-    - chmod 400 ~/.ssh/id_ed25519
+    - mkdir ./ssh_conf
+    - chmod 700 ./ssh_conf
+    - echo "$SSH_ROUTER_KEY" >> ./ssh_conf/router_ed25519
+    - chmod 400 ./ssh_conf/router_ed25519
     
     #- ansible-playbook -i inventory build-proxmox-image.yml --diff -v --private-key ~/.ssh/id_ed25519
+    - rsync -az -e "ssh -o StrictHostKeyChecking=no" --exclude .git . ubuntu@10.240.9.29:/home/ubuntu/wol
+    - rsync -az -e "ssh -o StrictHostKeyChecking=no" --exclude .git ~/.ssh/router_ed25519 ubuntu@10.240.9.29:/home/ubuntu/wol/ssh_conf
+    - ssh -o StrictHostKeyChecking=no ubuntu@10.240.9.29 'python3 main.py'
   only:
     - master
