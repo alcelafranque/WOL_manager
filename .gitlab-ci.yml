@@ -14,6 +14,6 @@ run:
     - chmod 400 ~/.ssh/ed25519
     - rsync -az -e "ssh -i ~/.ssh/ed25519 -o StrictHostKeyChecking=no" --exclude .git . ubuntu@10.240.9.29:/home/ubuntu/wol
     - ssh -i ~/.ssh/ed25519 -o StrictHostKeyChecking=no ubuntu@10.240.9.29 'pip install -r /home/ubuntu/wol/requirements.txt'
-    - ssh -i ~/.ssh/ed25519 -o StrictHostKeyChecking=no ubuntu@10.240.9.29 'mv /home/ubuntu/wol/wol.service /etc/systemd/system/ && sudo systemctl enable wol.service && sudo systemctl start wol.service'
+    - ssh -i ~/.ssh/ed25519 -o StrictHostKeyChecking=no ubuntu@10.240.9.29 'sudo mv /home/ubuntu/wol/wol.service /etc/systemd/system/ && sudo systemctl enable wol.service && sudo systemctl start wol.service'
   only:
     - master
