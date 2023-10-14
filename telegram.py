@@ -18,17 +18,24 @@ def get_config():
 
 
 def get_last_message(bot_id, nb_try):
-    api_url = f"https://api.telegram.org/bot{bot_id}/getUpdates"
-    messages = requests.get(api_url, timeout=10).text
+    api_url = f"https://api.telegram.org/bot{bot_id}/getUpdates?offset=1"
+    try:
+        messages = requests.get(api_url, timeout=3).text
+    except :
+        messages = retry_get_last_message(bot_id, nb_try)
     messages = json.loads(messages)
     if messages["result"]:
         return messages["result"][-1]
     else:
-        nb_try += 1
-        if nb_try == 10:
-            raise(NoResultFound)
-        get_last_message(bot_id)
+        get_last_message(bot_id, nb_try)
 
+def retry_get_last_message(bot_id, nb_try):
+    api_url = f"https://api.telegram.org/bot{bot_id}/getUpdates?offset=1"
+    try:
+        messages = requests.get(api_url, timeout=3).text
+    except:
+        messages = retry_get_last_message(bot_id, nb_try)
+    return messages
 
 def send_bot_message(bot_id, id, text):
     url_sending_message = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}'.format(bot_id, id, text)
@@ -97,59 +104,62 @@ def store_timestamps(last_message):
         timestamp_file.write(timestamps)
 
 def telegram_run():
-    nb_try = 0
-    config = get_config()
-    ip = config["ip"]
-    id = config["id"]
-    ssh_file = config["path_to_private_key"]
-    bot_id = config["bot_id"]
-    ssh_password = config["ssh_password"]
-    name_to_mac_file = config["name_to_mac_file"]
-    last_message = get_last_message(bot_id, nb_try)
-    print(last_message)
-    print(last_message["message"]["text"])
+    try:
+        nb_try = 0
+        config = get_config()
+        ip = config["ip"]
+        id = config["id"]
+        ssh_file = config["path_to_private_key"]
+        bot_id = config["bot_id"]
+        ssh_password = config["ssh_password"]
+        name_to_mac_file = config["name_to_mac_file"]
+        last_message = get_last_message(bot_id, nb_try)
+        print(last_message)
+        print(last_message["message"]["text"])
 
-    if re.match(r"/start.*", last_message["message"]["text"]) and is_a_new_message(last_message):
-        message_text = last_message["message"]["text"].split(" ")
-        starting_time = message_text[-1] if message_text[-1].isdigit() else 30
-        device_name = message_text[1]
-        mac = get_mac_from_name(device_name, name_to_mac_file)
-        if not mac:
-            send_bot_message(bot_id, id, "ERROR: device_name_not_in_database send /devices to print known devices")
-        #refresh_arp_table(ip)
-        wake_me_up(mac, ssh_file, ssh_password)
-        if not get_status(ip):
-            started = status_checker(mac, starting_time, ssh_password, ssh_file)
+        if re.match(r"/start.*", last_message["message"]["text"]) and is_a_new_message(last_message):
+            message_text = last_message["message"]["text"].split(" ")
+            starting_time = message_text[-1] if message_text[-1].isdigit() else 30
+            device_name = message_text[1]
+            mac = get_mac_from_name(device_name, name_to_mac_file)
+            if not mac:
+                send_bot_message(bot_id, id, "ERROR: device_name_not_in_database send /devices to print known devices")
+            #refresh_arp_table(ip)
+            wake_me_up(mac, ssh_file, ssh_password)
+            if not get_status(ip):
+                started = status_checker(mac, starting_time, ssh_password, ssh_file)
 
-            if not started:
-                text = "not started in due time"
-                send_bot_message(bot_id, id, text)
+                if not started:
+                    text = "not started in due time"
+                    send_bot_message(bot_id, id, text)
+                else:
+                    text = "done"
+                    send_bot_message(bot_id, id, text)
+                    store_timestamps(last_message)
             else:
-                text = "done"
+                text = "already up"
                 send_bot_message(bot_id, id, text)
                 store_timestamps(last_message)
-        else:
-            text = "already up"
-            send_bot_message(bot_id, id, text)
+
+        elif re.match(r"/add [^\s]+ [^\s]+", last_message['message']['text']) and is_a_new_message(last_message):
+            if is_a_valid_add_message(last_message['message']['text']):
+                store_new_name_mac_pair(last_message["message"]["text"], name_to_mac_file)
+                send_bot_message(bot_id,id, "Successfully Added")
+            else:
+                text = "ERROR: bad_message_format example: /add router_test a1:b6:23:dc:ff:99"
+                send_bot_message(bot_id, id, text)
+
+        elif re.match(r"/devices", last_message["message"]["text"]) and is_a_new_message(last_message):
+            send_bot_message(bot_id, id, get_devices(name_to_mac_file))
             store_timestamps(last_message)
 
-    elif re.match(r"/add [^\s]+ [^\s]+", last_message['message']['text']) and is_a_new_message(last_message):
-        if is_a_valid_add_message(last_message['message']['text']):
-            store_new_name_mac_pair(last_message["message"]["text"], name_to_mac_file)
-            send_bot_message(bot_id,id, "Successfully Added")
-        else:
-            text = "ERROR: bad_message_format example: /add router_test a1:b6:23:dc:ff:99"
+        elif re.match(r"/delete [^\s]+", last_message['message']['text']):
+            delete_mac_from_name(last_message['message']['text'].split(" ")[1], name_to_mac_file)
+            store_timestamps(last_message)
+
+        elif re.match(r"/help", last_message["message"]["text"]) and is_a_new_message(last_message):
+            text = "/add DEVICE_NAME DEVICE_MAC\n\n/delete DEVICE_NAME\n\n/devices\n\n/start DEVICE_NAME STARTING_TIME"
             send_bot_message(bot_id, id, text)
-
-    elif re.match(r"/devices", last_message["message"]["text"]) and is_a_new_message(last_message):
-        send_bot_message(bot_id, id, get_devices(name_to_mac_file))
-        store_timestamps(last_message)
-
-    elif re.match(r"/delete [^\s]+", last_message['message']['text']):
-        delete_mac_from_name(last_message['message']['text'].split(" ")[1], name_to_mac_file)
-        store_timestamps(last_message)
-
-    elif re.match(r"/help", last_message["message"]["text"]) and is_a_new_message(last_message):
-        text = "/add DEVICE_NAME DEVICE_MAC\n\n/delete DEVICE_NAME\n\n/devices\n\n/start DEVICE_NAME STARTING_TIME"
-        send_bot_message(bot_id, id, text)
-        store_timestamps(last_message)
+            store_timestamps(last_message)
+    except Exception as e:
+        send_bot_message(bot_id, id, str(e))
