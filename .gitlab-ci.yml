@@ -16,6 +16,6 @@ run:
     #- ansible-playbook -i inventory build-proxmox-image.yml --diff -v --private-key ~/.ssh/id_ed25519
     - rsync -az -e "ssh -i ~/.ssh/ed25519 -o StrictHostKeyChecking=no" --exclude .git . ubuntu@10.240.9.29:/home/ubuntu/wol
       #- rsync -az -e "ssh -o StrictHostKeyChecking=no" --exclude .git ./ssh_conf/router_ed25519 ubuntu@10.240.9.29:/home/ubuntu/wol/ssh_conf
-    - ssh -o StrictHostKeyChecking=no ubuntu@10.240.9.29 'ls'
+    - ssh -i ~/.ssh/ed25519 -o StrictHostKeyChecking=no ubuntu@10.240.9.29 'ls'
   only:
     - master
