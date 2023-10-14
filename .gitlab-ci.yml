@@ -7,10 +7,9 @@ run:
   script:
     - mkdir ./ssh_conf
     - mkdir ~/.ssh/
-    - touch ~/.ssh/router_ed25519
     - chmod 700 ./ssh_conf
     - echo "$SSH_ROUTER_KEY" >> ./ssh_conf/router_ed25519
-    - echo "$SSH_WOL_PROD" >> ~/.ssh/wol_prod_ed25519
+    - echo "$SSH_WOL_PROD" >> ~/.ssh/ed25519
     - chmod 400 ./ssh_conf/router_ed25519
     
     #- ansible-playbook -i inventory build-proxmox-image.yml --diff -v --private-key ~/.ssh/id_ed25519
