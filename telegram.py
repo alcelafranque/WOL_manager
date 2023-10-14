@@ -44,10 +44,11 @@ def send_bot_message(bot_id, id, text):
 
 
 def is_a_new_message(latest_message):
-    with open("saving_last_timestamps", "r") as former_timestamp:
-        timestamp1 = next(former_timestamp)
-    print(timestamp1)
-    print(str(latest_message["message"]["date"]))
+    try:
+        with open("saving_last_timestamps", "r") as former_timestamp:
+            timestamp1 = next(former_timestamp)
+    except FileNotFoundError:
+        return False
     return True if timestamp1 != str(latest_message["message"]["date"]) else False
 
 
