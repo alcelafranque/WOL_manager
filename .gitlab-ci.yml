@@ -1,0 +1,17 @@
+stages:
+  - run
+image: ubuntu:20.04
+
+run:
+  stage: run
+  script:
+    - pwd
+    - ls
+    - mkdir ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo "$PRIVKEY" >> ~/.ssh/id_ed25519
+    - chmod 400 ~/.ssh/id_ed25519
+    
+    #- ansible-playbook -i inventory build-proxmox-image.yml --diff -v --private-key ~/.ssh/id_ed25519
+  only:
+    - master
