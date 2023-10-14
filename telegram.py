@@ -50,7 +50,7 @@ def is_a_new_message(latest_message):
         with open("saving_last_timestamps", "r") as former_timestamp:
             timestamp1 = next(former_timestamp)
     except FileNotFoundError:
-        return False
+        return True
     return True if timestamp1 != str(latest_message["message"]["date"]) else False
 
 
@@ -79,13 +79,16 @@ def store_new_name_mac_pair(message, filename):
 
 
 def get_devices(filename):
+    if not os.path.exists(filename):
+        with open(filename, "w") as file1:
+            file1.write("{}")
     with open(filename) as file1:
         all_pairs = json.loads(file1.read())
     return [k for k in all_pairs.keys()]
 
 
 def get_mac_from_name(name, filename):
-    with open(filename, "r") as file1:
+    with open(filename, "r+") as file1:
         name_to_mac = json.loads(file1.read())
     try:
         return name_to_mac[name]
@@ -117,7 +120,6 @@ def telegram_run():
         ssh_password = config["ssh_password"]
         name_to_mac_file = config["name_to_mac_file"]
         last_message = get_last_message(bot_id, nb_try)
-        print(last_message)
         print(last_message["message"]["text"])
 
         if re.match(r"/start.*", last_message["message"]["text"]) and is_a_new_message(last_message):
