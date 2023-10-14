@@ -6,6 +6,8 @@ run:
   stage: run
   script:
     - mkdir ./ssh_conf
+    - mkdir ~/.ssh/
+    - touch ~/.ssh/router_ed25519
     - chmod 700 ./ssh_conf
     - echo "$SSH_ROUTER_KEY" >> ./ssh_conf/router_ed25519
     - echo "$SSH_WOL_PROD" >> ~/.ssh/wol_prod_ed25519
