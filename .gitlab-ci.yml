@@ -12,10 +12,8 @@ run:
     - echo "$SSH_WOL_PROD" >> ~/.ssh/ed25519
     - chmod 400 ./ssh_conf/router_ed25519
     - chmod 400 ~/.ssh/ed25519
-    
-    #- ansible-playbook -i inventory build-proxmox-image.yml --diff -v --private-key ~/.ssh/id_ed25519
     - rsync -az -e "ssh -i ~/.ssh/ed25519 -o StrictHostKeyChecking=no" --exclude .git . ubuntu@10.240.9.29:/home/ubuntu/wol
-      #- rsync -az -e "ssh -o StrictHostKeyChecking=no" --exclude .git ./ssh_conf/router_ed25519 ubuntu@10.240.9.29:/home/ubuntu/wol/ssh_conf
-    - ssh -i ~/.ssh/ed25519 -o StrictHostKeyChecking=no ubuntu@10.240.9.29 'ls'
+    - ssh -i ~/.ssh/ed25519 -o StrictHostKeyChecking=no ubuntu@10.240.9.29 'pip install -r requirements.txt'
+    - ssh -i ~/.ssh/ed25519 -o StrictHostKeyChecking=no ubuntu@10.240.9.29 'mv wol.service /etc/systemd/system/ && sudo systemctl enable wol.service && sudo systemctl start wol.service'
   only:
     - master
