@@ -6,9 +6,9 @@ After=multi-user.target
 Type=simple
 Restart=always
 WorkingDirectory=/home/ubuntu/wol
-ExecStart=/usr/bin/python3 main.py
 User=ubuntu
 Group=ubuntu
+ExecStart=/usr/bin/python3 main.py
 
 [Install]
 WantedBy=multi-user.target
