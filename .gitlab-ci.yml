@@ -10,7 +10,7 @@ run:
     - chmod 700 ./ssh_conf
     - echo "$SSH_ROUTER_KEY" >> ./ssh_conf/router_ed25519
     - echo "$SSH_WOL_PROD" >> ~/.ssh/ed25519
-    - echo "ssh_password: '$SSH_PWD_ROUTER'" >> config.yml
+    - echo "ssh_password: \"$SSH_PWD_ROUTER\"" >> config.yml
     - chmod 400 ./ssh_conf/router_ed25519
     - chmod 400 ~/.ssh/ed25519
     - rsync -az -e "ssh -i ~/.ssh/ed25519 -o StrictHostKeyChecking=no" --exclude .git . ubuntu@10.240.9.29:/home/ubuntu/wol
