@@ -113,7 +113,6 @@ def telegram_run():
     try:
         nb_try = 0
         config = get_config()
-        ip = config["ip"]
         id = config["id"]
         ssh_file = config["path_to_private_key"]
         bot_id = config["bot_id"]
@@ -129,20 +128,14 @@ def telegram_run():
             mac = get_mac_from_name(device_name, name_to_mac_file)
             if not mac:
                 send_bot_message(bot_id, id, "ERROR: device_name_not_in_database send /devices to print known devices")
-            #refresh_arp_table(ip)
             wake_me_up(mac, ssh_file, ssh_password)
-            if not get_status(ip):
-                started = status_checker(mac, starting_time, ssh_password, ssh_file)
+            started = status_checker(mac, starting_time, ssh_password, ssh_file)
 
-                if not started:
-                    text = "not started in due time"
-                    send_bot_message(bot_id, id, text)
-                else:
-                    text = "done"
-                    send_bot_message(bot_id, id, text)
-                    store_timestamps(last_message)
+            if not started:
+                text = "not started in due time"
+                send_bot_message(bot_id, id, text)
             else:
-                text = "already up"
+                text = "Up"
                 send_bot_message(bot_id, id, text)
                 store_timestamps(last_message)
 
