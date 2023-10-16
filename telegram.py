@@ -109,8 +109,10 @@ def delete_mac_from_name(name, filename):
         name_to_mac = json.loads(file1.read())
     if name in name_to_mac.keys():
         del name_to_mac[name]
-    with open(filename, "w") as file1:
-        file1.write(json.dumps(name_to_mac))
+        with open(filename, "w") as file1:
+            file1.write(json.dumps(name_to_mac))
+        return True
+    return False
 
 def store_timestamps(last_message):
     timestamps = str(last_message["message"]["date"])
@@ -160,9 +162,12 @@ def telegram_run():
             store_timestamps(last_message)
 
         elif re.match(r"/delete [^\s]+", last_message['message']['text']):
-            delete_mac_from_name(last_message['message']['text'].split(" ")[1], name_to_mac_file)
-            text = "Device deleted"
-            send_bot_message(bot_id, id, text)
+            if delete_mac_from_name(last_message['message']['text'].split(" ")[1], name_to_mac_file):
+                text = "Device deleted"
+                send_bot_message(bot_id, id, text)
+            else:
+                text = "Device not found. See /devices"
+                send_bot_message(bot_id, id, text)
             store_timestamps(last_message)
 
         elif re.match(r"/help", last_message["message"]["text"]) and is_a_new_message(last_message):
