@@ -122,7 +122,6 @@ def telegram_run():
         nb_try = 0
         config = get_config()
         id = config["id"]
-        interface = config["interface"]
         ssh_file = config["path_to_private_key"]
         bot_id = config["bot_id"]
         ssh_password = config["ssh_password"]
