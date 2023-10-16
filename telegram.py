@@ -60,7 +60,7 @@ def is_a_valid_add_message(message_text):
     return True if re.match(r"([0123456789a-fA-F]{2}:){5}[0123456789a-fA-F]{2}", splited_message[2]) else False
 
 
-def store_new_name_mac_pair(message, filename):
+def store_new_pair(message, filename):
     splitted_message = message.split(" ")
     if not os.path.isfile(filename):
         with open(filename, "w"):
@@ -72,8 +72,7 @@ def store_new_name_mac_pair(message, filename):
                 name_to_mac = json.loads(file1.read())
             except json.decoder.JSONDecodeError:
                 name_to_mac = {}
-    name_to_mac[splitted_message[1]] = splitted_message[2]
-    print(name_to_mac)
+    name_to_mac[splitted_message[1]] = {"mac": splitted_message[2], "interface": splitted_message[3]}
     with open(filename, 'w') as file1:
         file1.write(json.dumps(name_to_mac))
 
@@ -87,13 +86,22 @@ def get_devices(filename):
     return [k for k in all_pairs.keys()]
 
 
-def get_mac_from_name(name, filename):
-    with open(filename, "r+") as file1:
+def get_data_from_name(name, filename):
+    """
+    Get mac or interface from name.
+    :param name: str
+    :param filename: str
+    :param data: str (mac | interface)
+    :return: str
+    """
+    if not os.path.exists(filename):
+        return None, None
+    with open(filename, "r") as file1:
         name_to_mac = json.loads(file1.read())
     try:
-        return name_to_mac[name]
+        return name_to_mac[name]["mac"], name_to_mac[name]["interface"]
     except:
-        return None
+        return None, None
 
 
 def delete_mac_from_name(name, filename):
@@ -126,7 +134,7 @@ def telegram_run():
             message_text = last_message["message"]["text"].split(" ")
             starting_time = message_text[-1] if message_text[-1].isdigit() else 30
             device_name = message_text[1]
-            mac = get_mac_from_name(device_name, name_to_mac_file)
+            mac, interface = get_data_from_name(device_name, name_to_mac_file)
             if not mac:
                 send_bot_message(bot_id, id, "ERROR: device_name_not_in_database send /devices to print known devices")
             wake_me_up(mac, ssh_file, ssh_password, interface)
@@ -142,8 +150,8 @@ def telegram_run():
 
         elif re.match(r"/add [^\s]+ [^\s]+", last_message['message']['text']) and is_a_new_message(last_message):
             if is_a_valid_add_message(last_message['message']['text']):
-                store_new_name_mac_pair(last_message["message"]["text"], name_to_mac_file)
-                send_bot_message(bot_id,id, "Successfully Added")
+                store_new_pair(last_message["message"]["text"], name_to_mac_file)
+                send_bot_message(bot_id, id, "Successfully Added")
             else:
                 text = "ERROR: bad_message_format example: /add router_test a1:b6:23:dc:ff:99"
                 send_bot_message(bot_id, id, text)
@@ -157,7 +165,7 @@ def telegram_run():
             store_timestamps(last_message)
 
         elif re.match(r"/help", last_message["message"]["text"]) and is_a_new_message(last_message):
-            text = "/add DEVICE_NAME DEVICE_MAC\n\n/delete DEVICE_NAME\n\n/devices\n\n/start DEVICE_NAME STARTING_TIME"
+            text = "/add NAME MAC ROUTER_INTERFACE\n\n/delete DEVICE_NAME\n\n/devices\n\n/start DEVICE_NAME STARTING_TIME"
             send_bot_message(bot_id, id, text)
             store_timestamps(last_message)
     except Exception as e:
