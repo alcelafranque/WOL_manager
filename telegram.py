@@ -114,6 +114,7 @@ def telegram_run():
         nb_try = 0
         config = get_config()
         id = config["id"]
+        interface = config["interface"]
         ssh_file = config["path_to_private_key"]
         bot_id = config["bot_id"]
         ssh_password = config["ssh_password"]
@@ -128,7 +129,7 @@ def telegram_run():
             mac = get_mac_from_name(device_name, name_to_mac_file)
             if not mac:
                 send_bot_message(bot_id, id, "ERROR: device_name_not_in_database send /devices to print known devices")
-            wake_me_up(mac, ssh_file, ssh_password)
+            wake_me_up(mac, ssh_file, ssh_password, interface)
             started = status_checker(mac, starting_time, ssh_password, ssh_file)
 
             if not started:

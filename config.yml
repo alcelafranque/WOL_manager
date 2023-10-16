@@ -1,5 +1,6 @@
 id: "-854544886"
 bot_id: "5886610488:AAG711fMlHlbCByixJo0SUMe2MXgHuX-7Fk"
-ip: "10.240.128.0"
 name_to_mac_file: "name_to_mac.json"
 path_to_private_key: "ssh_conf/router_ed25519"
+ssh_password: ""
+interface: "eth5.128"
