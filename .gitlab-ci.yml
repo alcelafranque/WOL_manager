@@ -1,0 +1,20 @@
+stages:
+  - run
+image: registry1.prod1.fbc.int.lac-coloc.fr:5000/image-rsync:latest
+
+run:
+  stage: run
+  script:
+    - mkdir ./ssh_conf
+    - mkdir ~/.ssh/
+    - chmod 700 ./ssh_conf
+    - echo "$SSH_ROUTER_KEY" >> ./ssh_conf/router_ed25519
+    - echo "$SSH_WOL_PROD" >> ~/.ssh/ed25519
+    - echo "$SSH_PWD_ROUTER" >> config.yml
+    - chmod 400 ./ssh_conf/router_ed25519
+    - chmod 400 ~/.ssh/ed25519
+    - rsync -az -e "ssh -i ~/.ssh/ed25519 -o StrictHostKeyChecking=no" --exclude .git . ubuntu@10.240.9.29:/home/ubuntu/wol
+    - ssh -i ~/.ssh/ed25519 -o StrictHostKeyChecking=no ubuntu@10.240.9.29 'pip install -r /home/ubuntu/wol/requirements.txt'
+    - ssh -i ~/.ssh/ed25519 -o StrictHostKeyChecking=no ubuntu@10.240.9.29 'sudo mv /home/ubuntu/wol/wol.service /etc/systemd/system/ && sudo systemctl enable wol.service && sudo systemctl start wol.service'
+  only:
+    - master

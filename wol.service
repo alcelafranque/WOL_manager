@@ -1,0 +1,14 @@
+[Unit]
+Description=My WOL service
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=always
+WorkingDirectory=/home/ubuntu/wol
+User=ubuntu
+Group=ubuntu
+ExecStart=/usr/bin/python3 main.py
+
+[Install]
+WantedBy=multi-user.target
