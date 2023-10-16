@@ -156,12 +156,13 @@ def telegram_run():
             else:
                 text = "ERROR: bad_message_format example: /add router_test a1:b6:23:dc:ff:99"
                 send_bot_message(bot_id, id, text)
+            store_timestamps(last_message)
 
         elif re.match(r"/devices", last_message["message"]["text"]) and is_a_new_message(last_message):
             send_bot_message(bot_id, id, get_devices(name_to_mac_file))
             store_timestamps(last_message)
 
-        elif re.match(r"/delete [^\s]+", last_message['message']['text']):
+        elif re.match(r"/delete [^\s]+", last_message['message']['text']) and is_a_new_message(last_message):
             if delete_mac_from_name(last_message['message']['text'].split(" ")[1], name_to_mac_file):
                 text = "Device deleted"
                 send_bot_message(bot_id, id, text)
