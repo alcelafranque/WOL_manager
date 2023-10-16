@@ -161,6 +161,8 @@ def telegram_run():
 
         elif re.match(r"/delete [^\s]+", last_message['message']['text']):
             delete_mac_from_name(last_message['message']['text'].split(" ")[1], name_to_mac_file)
+            text = "Device deleted"
+            send_bot_message(bot_id, id, text)
             store_timestamps(last_message)
 
         elif re.match(r"/help", last_message["message"]["text"]) and is_a_new_message(last_message):
