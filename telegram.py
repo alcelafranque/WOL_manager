@@ -147,7 +147,7 @@ def telegram_run():
             else:
                 text = "Up"
                 send_bot_message(bot_id, id, text)
-                store_timestamps(last_message)
+            store_timestamps(last_message)
 
         elif re.match(r"/add [^\s]+ [^\s]+", last_message['message']['text']) and is_a_new_message(last_message):
             if is_a_valid_add_message(last_message['message']['text']):
