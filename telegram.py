@@ -131,9 +131,9 @@ def telegram_run():
         last_message = get_last_message(bot_id, nb_try)
         print(last_message["message"]["text"])
 
-        if re.match(r"/start.*", last_message["message"]["text"]) and is_a_new_message(last_message):
+        if re.match(r"/start [^\s]+ ([0-9]+)?", last_message["message"]["text"]) and is_a_new_message(last_message):
             message_text = last_message["message"]["text"].split(" ")
-            starting_time = message_text[-1] if message_text[-1].isdigit() else 30
+            starting_time = message_text[-1] if message_text[-1].isdigit() and len(message_text) == 3 else 30
             device_name = message_text[1]
             mac, interface = get_data_from_name(device_name, name_to_mac_file)
             if not mac:
