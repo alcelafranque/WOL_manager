@@ -143,7 +143,7 @@ def new_telegram_run():
     config = get_config()
     id = config["id"]
     ssh_file = config["path_to_private_key"]
-    bot_token = config["bot_id"]
+    bot_token = config["bot_token"]
     ssh_password = config["ssh_password"]
     name_to_mac_file = config["name_to_mac_file"]
 
