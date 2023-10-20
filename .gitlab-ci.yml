@@ -14,8 +14,8 @@ run:
     - echo "$BOT_ID" >> config.yml
     - chmod 400 ./ssh_conf/router_ed25519
     - chmod 400 ~/.ssh/ed25519
-    - rsync --delete -az -e "ssh -i ~/.ssh/ed25519 -o StrictHostKeyChecking=no" --exclude .git . ubuntu@10.240.9.29:/home/ubuntu/wol
-    - ssh -i ~/.ssh/ed25519 -o StrictHostKeyChecking=no ubuntu@10.240.9.29 'pip install -r /home/ubuntu/wol/requirements.txt'
-    - ssh -i ~/.ssh/ed25519 -o StrictHostKeyChecking=no ubuntu@10.240.9.29 'sudo mv /home/ubuntu/wol/wol.service /etc/systemd/system/ && sudo systemctl stop wol.service && sudo systemctl daemon-reload && sudo systemctl enable wol.service && sudo systemctl start wol.service'
+    - rsync --delete -az -e "ssh -i ~/.ssh/ed25519 -o StrictHostKeyChecking=no" --exclude .git . ubuntu@10.240.9.30:/home/ubuntu/wol
+    - ssh -i ~/.ssh/ed25519 -o StrictHostKeyChecking=no ubuntu@10.240.9.30 'pip install -r /home/ubuntu/wol/requirements.txt'
+    - ssh -i ~/.ssh/ed25519 -o StrictHostKeyChecking=no ubuntu@10.240.9.30 'sudo mv /home/ubuntu/wol/wol.service /etc/systemd/system/ && sudo systemctl stop wol.service && sudo systemctl daemon-reload && sudo systemctl enable wol.service && sudo systemctl start wol.service'
   only:
     - master
