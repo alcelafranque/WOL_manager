@@ -1,10 +1,11 @@
-from telegram import *
+import asyncio
+
+from my_telegram import *
 
 
 def main():
     while True:
-        telegram_run()
-        time.sleep(2)
+        new_telegram_run()
 
 
 if __name__ == '__main__':
