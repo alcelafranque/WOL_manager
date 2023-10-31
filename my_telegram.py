@@ -9,6 +9,8 @@ from wake_me_up import *
 from status_checker import *
 
 
+help_text = "/add NAME MAC ROUTER_INTERFACE\n\n/delete DEVICE_NAME\n\n/devices\n\n/start DEVICE_NAME STARTING_TIME"
+
 def get_config():
     with open("config.yml", "r") as file:
         config = yaml.safe_load(file)
@@ -83,7 +85,7 @@ def delete_mac_from_name(name, filename):
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     last_message = update.message.text
-    if re.match(r"/start [^\s]+ ([0-9]+)?", last_message):
+    if re.match(r"/start\s{1,}[^\s]+\s{1,}([0-9]+)?", last_message):
         message_text = last_message.split(" ")
         starting_time = message_text[-1] if message_text[-1].isdigit() and len(message_text) == 3 else 40
         device_name = message_text[1]
@@ -100,12 +102,13 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         else:
             text = "Up"
             await update.message.reply_text(text)
+    else:
+        await update.message.reply_text("Unkown command\n" + help_text)
 
 
 async def help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a message when the command /help is issued."""
-    text = "/add NAME MAC ROUTER_INTERFACE\n\n/delete DEVICE_NAME\n\n/devices\n\n/start DEVICE_NAME STARTING_TIME"
-    await update.message.reply_text(text)
+    await update.message.reply_text(help_text)
 
 
 async def add(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -118,6 +121,9 @@ async def add(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         else:
             text = "ERROR: bad_message_format example: /add router_test a1:b6:23:dc:ff:99 eth0"
             await update.message.reply_text(text)
+        else:
+    else:
+        await update.message.reply_text("Unknown command\n" + help_text)
 
 
 async def delete(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -129,6 +135,8 @@ async def delete(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         else:
             text = "Device not found. See /devices"
             await update.message.reply_text(text)
+    else:
+        await update.message.reply_text("Unkown command\n" + help_text)
 
 
 async def devices(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
