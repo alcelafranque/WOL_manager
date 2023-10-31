@@ -85,7 +85,7 @@ def delete_mac_from_name(name, filename):
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     last_message = update.message.text
-    if re.match(r"/start\s{1,}[^\s]+\s{1,}([0-9]+)?", last_message):
+    if re.match(r"/start\s{1,}[^\s]+\s{0,}([0-9]+)?", last_message):
         message_text = last_message.split(" ")
         starting_time = message_text[-1] if message_text[-1].isdigit() and len(message_text) == 3 else 40
         device_name = message_text[1]
