@@ -85,7 +85,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     last_message = update.message.text
     if re.match(r"/start [^\s]+ ([0-9]+)?", last_message):
         message_text = last_message.split(" ")
-        starting_time = message_text[-1] if message_text[-1].isdigit() and len(message_text) == 3 else 30
+        starting_time = message_text[-1] if message_text[-1].isdigit() and len(message_text) == 3 else 40
         device_name = message_text[1]
         mac, interface = get_data_from_name(device_name, name_to_mac_file)
         if not mac:
