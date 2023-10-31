@@ -121,7 +121,6 @@ async def add(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         else:
             text = "ERROR: bad_message_format example: /add router_test a1:b6:23:dc:ff:99 eth0"
             await update.message.reply_text(text)
-        else:
     else:
         await update.message.reply_text("Unknown command\n" + help_text)
 
