@@ -9,7 +9,7 @@ from wake_me_up import *
 from status_checker import *
 
 
-help_text = "/add NAME MAC ROUTER_INTERFACE\n\n/delete DEVICE_NAME\n\n/devices\n\n/start DEVICE_NAME STARTING_TIME"
+help_text = "/add NAME MAC ROUTER_INTERFACE\n\n/delete DEVICE_NAME\n\n/devices\n\n/start DEVICE_NAME STARTING_TIME\n\n/status DEVICE_NAME"
 
 def get_config():
     with open("config.yml", "r") as file:
