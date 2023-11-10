@@ -82,6 +82,27 @@ def delete_mac_from_name(name, filename):
         return True
     return False
 
+async def status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    last_message = update.message.text
+    if re.match(r"/status\s{1,}[^\s]\s{0,}", last_message):
+        message_text = last_message.split(" ")
+        device_name = message_text[1]
+        mac, interface = get_data_from_name(device_name, name_to_mac_file)
+        if not mac:
+            text = "ERROR: device_name_not_in_database send /devices to print known devices"
+            await update.message.reply_text(text)
+
+        status = status_checker(mac, 0, ssh_password, ssh_file)
+
+        if not status:
+            text = "This ressource is down"
+            await update.message.reply_text(text)
+        else:
+            text = "Up"
+            await update.message.reply_text(text)
+    else:
+        await update.message.reply_text("Unkown command\n" + help_text)
+
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     last_message = update.message.text
@@ -158,6 +179,7 @@ def new_telegram_run():
     application = ApplicationBuilder().token(bot_token).read_timeout(10).build()
 
     application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("status", status))
     application.add_handler(CommandHandler("help", help))
     application.add_handler(CommandHandler("delete", delete))
     application.add_handler(CommandHandler("add", add))
