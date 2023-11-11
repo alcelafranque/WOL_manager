@@ -110,16 +110,35 @@ async def status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    context.user_data["action"] = "start"
-    device_names = get_devices(name_to_mac_file)
-    if device_names:
-        keyboard = [[device] for device in device_names]
-        reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True)
-        await update.message.reply_text(
-            "Which devices to power on:", reply_markup=reply_markup
-        )
+    last_message = update.message.text
+    if re.match(r"/start\s{1,}[^\s]+\s{0,}([0-9]+)?", last_message):
+        message_text = last_message.split(" ")
+        starting_time = message_text[-1] if message_text[-1].isdigit() and len(message_text) == 3 else 40
+        device_name = message_text[1]
+        mac, interface = get_data_from_name(device_name, name_to_mac_file)
+        if not mac:
+            text = "ERROR: device_name_not_in_database send /devices to print known devices"
+            await update.message.reply_text(text)
+        wake_me_up(mac, ssh_file, ssh_password, interface)
+        started = status_checker(mac, starting_time, ssh_password, ssh_file)
+
+        if not started:
+            text = "not started in due time"
+            await update.message.reply_text(text)
+        else:
+            text = "Up"
+            await update.message.reply_text(text)
     else:
-        await update.message.reply_text("Null bitch.")
+        context.user_data["action"] = "start"
+        device_names = get_devices(name_to_mac_file)
+        if device_names:
+            keyboard = [[device] for device in device_names]
+            reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True)
+            await update.message.reply_text(
+                "Which devices to power on:", reply_markup=reply_markup
+            )
+        else:
+            await update.message.reply_text("Null bitch.")
 
 
 async def select_device(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
