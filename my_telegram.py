@@ -1,15 +1,21 @@
 import json
 import re
 import yaml
-
-from telegram import Update
-from telegram.ext import CommandHandler, ContextTypes, ApplicationBuilder
+from telegram.ext import (
+    CommandHandler,
+    ContextTypes,
+    ApplicationBuilder,
+    MessageHandler,
+    filters,
+)
+from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
 from wake_me_up import *
 
 from status_checker import *
 
 
-help_text = "/add NAME MAC ROUTER_INTERFACE\n\n/delete DEVICE_NAME\n\n/devices\n\n/start DEVICE_NAME STARTING_TIME"
+help_text = "/add NAME MAC ROUTER_INTERFACE\n\n/delete DEVICE_NAME\n\n/devices\n\n/start DEVICE_NAME STARTING_TIME\n\n/status DEVICE_NAME"
+
 
 def get_config():
     with open("config.yml", "r") as file:
@@ -19,7 +25,11 @@ def get_config():
 
 def is_a_valid_mac_address(message_text):
     splited_message = message_text.split(" ")
-    return True if re.match(r"([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}", splited_message[2]) else False
+    return (
+        True
+        if re.match(r"([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}", splited_message[2])
+        else False
+    )
 
 
 def store_new_pair(message, filename):
@@ -40,8 +50,11 @@ def store_new_pair(message, filename):
                 name_to_mac = json.loads(file1.read())
             except json.decoder.JSONDecodeError:
                 name_to_mac = {}
-    name_to_mac[splitted_message[1]] = {"mac": splitted_message[2], "interface": splitted_message[3]}
-    with open(filename, 'w') as file1:
+    name_to_mac[splitted_message[1]] = {
+        "mac": splitted_message[2],
+        "interface": splitted_message[3],
+    }
+    with open(filename, "w") as file1:
         file1.write(json.dumps(name_to_mac))
 
 
@@ -83,27 +96,59 @@ def delete_mac_from_name(name, filename):
     return False
 
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    last_message = update.message.text
-    if re.match(r"/start\s{1,}[^\s]+\s{0,}([0-9]+)?", last_message):
-        message_text = last_message.split(" ")
-        starting_time = message_text[-1] if message_text[-1].isdigit() and len(message_text) == 3 else 40
-        device_name = message_text[1]
-        mac, interface = get_data_from_name(device_name, name_to_mac_file)
-        if not mac:
-            text = "ERROR: device_name_not_in_database send /devices to print known devices"
-            await update.message.reply_text(text)
-        wake_me_up(mac, ssh_file, ssh_password, interface)
-        started = status_checker(mac, starting_time, ssh_password, ssh_file)
-
-        if not started:
-            text = "not started in due time"
-            await update.message.reply_text(text)
-        else:
-            text = "Up"
-            await update.message.reply_text(text)
+async def status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    context.user_data["action"] = "status"
+    device_names = get_devices(name_to_mac_file)
+    if device_names:
+        keyboard = [[device] for device in device_names]
+        reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True)
+        await update.message.reply_text(
+            "Which devices to check?:", reply_markup=reply_markup
+        )
     else:
-        await update.message.reply_text("Unkown command\n" + help_text)
+        await update.message.reply_text("Null bitch")
+
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    context.user_data["action"] = "start"
+    device_names = get_devices(name_to_mac_file)
+    if device_names:
+        keyboard = [[device] for device in device_names]
+        reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True)
+        await update.message.reply_text(
+            "Which devices to power on:", reply_markup=reply_markup
+        )
+    else:
+        await update.message.reply_text("Null bitch.")
+
+
+async def select_device(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    device_name = update.message.text
+    mac, interface = get_data_from_name(device_name, name_to_mac_file)
+    started = status_checker(mac, 0, ssh_password, ssh_file)
+
+    if not mac:
+        text = "ERROR: device_name_not_in_database send /devices to print known devices"
+        await update.message.reply_text(text)
+    else:
+        if context.user_data.get("action") == "start":
+            wake_me_up(mac, ssh_file, ssh_password, interface)
+            started = status_checker(mac, 40, ssh_password, ssh_file)
+            if not started:
+                text = "not started in due time"
+                await update.message.reply_text(text)
+            else:
+                text = "Up"
+                await update.message.reply_text(text)
+        elif context.user_data.get("action") == "status":
+            status = status_checker(mac, 0, ssh_password, ssh_file)
+            if not status:
+                text = "This ressource is down"
+                await update.message.reply_text(text)
+            else:
+                text = "Up"
+                await update.message.reply_text(text)
+        context.user_data["action"] = None
 
 
 async def help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -154,10 +199,13 @@ def new_telegram_run():
     ssh_password = config["ssh_password"]
     name_to_mac_file = config["name_to_mac_file"]
 
-
     application = ApplicationBuilder().token(bot_token).read_timeout(10).build()
 
     application.add_handler(CommandHandler("start", start))
+    application.add_handler(
+        MessageHandler(filters.TEXT & (~filters.COMMAND), select_device)
+    )
+    application.add_handler(CommandHandler("status", status))
     application.add_handler(CommandHandler("help", help))
     application.add_handler(CommandHandler("delete", delete))
     application.add_handler(CommandHandler("add", add))
