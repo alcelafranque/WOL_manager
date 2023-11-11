@@ -125,7 +125,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def select_device(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     device_name = update.message.text
     mac, interface = get_data_from_name(device_name, name_to_mac_file)
-    started = status_checker(mac, 0, ssh_password, ssh_file)
 
     if not mac:
         text = "ERROR: device_name_not_in_database send /devices to print known devices"
@@ -141,8 +140,8 @@ async def select_device(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
                 text = "Up"
                 await update.message.reply_text(text)
         elif context.user_data.get("action") == "status":
-            status = status_checker(mac, 0, ssh_password, ssh_file)
-            if not status:
+            started = status_checker(mac, 0, ssh_password, ssh_file)
+            if not started:
                 text = "This ressource is down"
                 await update.message.reply_text(text)
             else:
