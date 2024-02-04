@@ -102,11 +102,8 @@ async def status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text("OUI")
         device_name = last_message.split(" ")[-1] if last_message.split(" ")[-1] else last_message.split(" ")[-2]
         mac, interface = get_data_from_name(device_name, name_to_mac_file)
-        await update.message.reply_text("Avant checking")
         await update.message.reply_text("MAC:" + str(mac))
-        await update.message.reply_text("MAC2:" + str(last_message))
         started = status_checker(mac, 0, config)
-        await update.message.reply_text("Après checking")
         if not started:
             text = "This ressource is down"
             await update.message.reply_text(text)
@@ -165,6 +162,7 @@ async def select_device(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
             text = "Starting"
             await update.message.reply_text(text)
         elif context.user_data.get("action") == "status":
+            await update.message.reply_text("MAC:" + str(mac))
             started = status_checker(mac, 0, config)
             if not started:
                 text = "This ressource is down"
