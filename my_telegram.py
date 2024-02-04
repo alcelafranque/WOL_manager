@@ -100,11 +100,22 @@ async def status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     context.user_data["action"] = "status"
     device_names = get_devices(name_to_mac_file)
     if device_names:
-        keyboard = [[device] for device in device_names]
-        reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True)
-        await update.message.reply_text(
-            "Which devices to check?:", reply_markup=reply_markup
-        )
+        if re.match(r"/start\s{1,}[^\s]+\s{0,}([0-9]+)?", last_message):
+            device_name = update.message.text
+            mac, interface = get_data_from_name(device_name, name_to_mac_file)
+            started = status_checker(mac, 0, ssh_password, ssh_file)
+            if not started:
+                text = "This ressource is down"
+                await update.message.reply_text(text)
+            else:
+                text = "Up"
+                await update.message.reply_text(text)
+        else:
+            keyboard = [[device] for device in device_names]
+            reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True)
+            await update.message.reply_text(
+                "Which devices to check?:", reply_markup=reply_markup
+            )
     else:
         await update.message.reply_text("Null bitch")
 
