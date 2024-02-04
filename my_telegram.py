@@ -101,7 +101,7 @@ async def status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if re.match(r"/status\s{1,}[^\s]+\s{0,}", last_message):
         device_name = last_message
         mac, interface = get_data_from_name(device_name, name_to_mac_file)
-        started = status_checker(mac, 0, ssh_password, ssh_file)
+        started = status_checker(mac, 0, config)
         if not started:
             text = "This ressource is down"
             await update.message.reply_text(text)
@@ -160,7 +160,7 @@ async def select_device(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
             text = "Starting"
             await update.message.reply_text(text)
         elif context.user_data.get("action") == "status":
-            started = status_checker(mac, 0, ssh_password, ssh_file)
+            started = status_checker(mac, 0, config)
             if not started:
                 text = "This ressource is down"
                 await update.message.reply_text(text)
