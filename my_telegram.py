@@ -104,6 +104,7 @@ async def status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         mac, interface = get_data_from_name(device_name, name_to_mac_file)
         await update.message.reply_text("Avant checking")
         await update.message.reply_text("MAC:" + str(mac))
+        await update.message.reply_text("MAC2:" + str(last_message))
         started = status_checker(mac, 0, config)
         await update.message.reply_text("Après checking")
         if not started:
