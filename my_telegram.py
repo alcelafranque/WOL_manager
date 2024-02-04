@@ -119,6 +119,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         if not mac:
             text = "ERROR: device_name_not_in_database send /devices to print known devices"
             await update.message.reply_text(text)
+        await update.message.reply_text("DEBUG")
         wake_me_up(mac, ssh_file, ssh_password, interface)
         text = "Starting device"
         await update.message.reply_text(text)
