@@ -7,11 +7,16 @@ import paramiko
 
 NB_TRY = 6
 
-def status_checker(mac, starting_time, mdp, ssh_filename, ):
+def status_checker(mac, starting_time, config):
+    ssh_filename = config["path_to_private_key"]
+    mdp = config["ssh_password"]
+    router_ip = config["router_ip"]
+    router_hostname = config["router_hostname"]
     time.sleep(int(starting_time))
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect("10.240.128.254", username='wol', password=mdp, key_filename=ssh_filename)
+    ssh.connect(router_ip, username=router_hostname, password=mdp, key_filename=ssh_filename)
+
     stdin, stdout, stderr = ssh.exec_command("ip neigh")
     buffer = StringIO()
     sys.stdout = buffer

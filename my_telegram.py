@@ -99,9 +99,12 @@ def delete_mac_from_name(name, filename):
 async def status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     last_message = update.message.text
     if re.match(r"/status\s{1,}[^\s]+\s{0,}", last_message):
+        await update.message.reply_text("OUI")
         device_name = last_message
         mac, interface = get_data_from_name(device_name, name_to_mac_file)
+        await update.message.reply_text("Avant checking")
         started = status_checker(mac, 0, config)
+        await update.message.reply_text("Après checking")
         if not started:
             text = "This ressource is down"
             await update.message.reply_text(text)
