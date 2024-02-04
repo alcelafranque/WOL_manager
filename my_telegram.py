@@ -145,13 +145,8 @@ async def select_device(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     else:
         if context.user_data.get("action") == "start":
             wake_me_up(mac, ssh_file, ssh_password, interface)
-            started = status_checker(mac, 40, ssh_password, ssh_file)
-            if not started:
-                text = "not started in due time"
-                await update.message.reply_text(text)
-            else:
-                text = "Up"
-                await update.message.reply_text(text)
+            text = "Starting"
+            await update.message.reply_text(text)
         elif context.user_data.get("action") == "status":
             started = status_checker(mac, 0, ssh_password, ssh_file)
             if not started:
