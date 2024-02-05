@@ -99,7 +99,7 @@ def delete_mac_from_name(name, filename):
 async def status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     last_message = update.message.text
     if re.match(r"/status\s{1,}[^\s]+\s{0,}", last_message):
-        device_name = last_message.split(" ")[-1] if last_message.split(" ")[-1] != "" else last_message.split(" ")[-2]
+        device_name = last_message.split(" ")[-1] if last_message.split(" ")[-1] != "" else last_message.spliti(" ")[-2]
         mac, interface = get_data_from_name(device_name, name_to_mac_file)
         started = status_checker(mac, 0, config)
         if not started:
@@ -156,7 +156,7 @@ async def select_device(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         await update.message.reply_text(text)
     else:
         if context.user_data.get("action") == "start":
-            wake_me_up(mac, ssh_file, ssh_password, interface)
+            wake_me_up(mac, config, interface)
             text = "Starting"
             await update.message.reply_text(text)
         elif context.user_data.get("action") == "status":
