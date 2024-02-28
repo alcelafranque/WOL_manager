@@ -96,21 +96,25 @@ def delete_mac_from_name(name, filename):
     return False
 
 
+async def run_multiple_status(update: Update, device_names):
+    for device in device_names:
+        mac, interface = get_data_from_name(device, name_to_mac_file)
+        started = status_checker(mac, 0, config)
+        if not started:
+            text = f"{device} is down"
+            await update.message.reply_text(text)
+        else:
+            text = f"{device} Up"
+            await update.message.reply_text(text)
+
+
 async def status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     last_message = update.message.text
     if re.match(r"/status\s{1,}[^\s]+\s{0,}", last_message):
         device_name = last_message.split(" ")[-1] if last_message.split(" ")[-1] != "" else last_message.spliti(" ")[-2]
         if device_name == "all":
             device_names = get_devices(name_to_mac_file)
-            for device in device_names:
-                mac, interface = get_data_from_name(device, name_to_mac_file)
-                started = status_checker(mac, 0, config)
-                if not started:
-                    text = f"{device} is down"
-                    await update.message.reply_text(text)
-                else:
-                    text = f"{device} Up"
-                    await update.message.reply_text(text)
+            await run_multiple_status(update, device_names)
         else:
             mac, interface = get_data_from_name(device_name, name_to_mac_file)
             started = status_checker(mac, 0, config)
@@ -191,15 +195,7 @@ async def select_device(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
                 await update.message.reply_text(text)
         elif context.user_data.get("action") == "status":
             if device_name == "all":
-                for device in device_names:
-                    mac, interface = get_data_from_name(device, name_to_mac_file)
-                    started = status_checker(mac, 0, config)
-                    if not started:
-                        text = f"{device} is down"
-                        await update.message.reply_text(text)
-                    else:
-                        text = f"{device} Up"
-                        await update.message.reply_text(text)
+                await run_multiple_status(update, device_names)
             else:
                 started = status_checker(mac, 0, config)
                 if not started:
