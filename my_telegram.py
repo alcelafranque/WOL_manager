@@ -139,7 +139,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         context.user_data["action"] = "start"
         device_names = get_devices(name_to_mac_file)
         if device_names:
-            keyboard = [[device] for device in device_names][0].append("all")
+            keyboard = [[device] for device in device_names]
+            keyboard[0].append("all")
             reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True)
             await update.message.reply_text(
                 "Which devices to power on:", reply_markup=reply_markup
@@ -152,7 +153,7 @@ async def select_device(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     device_name = update.message.text
     mac, interface = get_data_from_name(device_name, name_to_mac_file)
 
-    if not mac:
+    if not mac and device_name != "all":
         text = "ERROR: device_name_not_in_database send /devices to print known devices"
         await update.message.reply_text(text)
     else:
