@@ -112,7 +112,7 @@ async def status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         context.user_data["action"] = "status"
         device_names = get_devices(name_to_mac_file)
         if device_names:
-            keyboard = [[device] for device in device_names]
+            keyboard = [[device] for device in device_names].append("all")
             reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True)
             await update.message.reply_text(
                 "Which devices to check?:", reply_markup=reply_markup
@@ -138,7 +138,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         context.user_data["action"] = "start"
         device_names = get_devices(name_to_mac_file)
         if device_names:
-            keyboard = [[device] for device in device_names]
+            keyboard = [[device] for device in device_names].append("all")
             reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True)
             await update.message.reply_text(
                 "Which devices to power on:", reply_markup=reply_markup
@@ -155,18 +155,37 @@ async def select_device(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         text = "ERROR: device_name_not_in_database send /devices to print known devices"
         await update.message.reply_text(text)
     else:
+        device_names = get_devices(name_to_mac_file)
         if context.user_data.get("action") == "start":
-            wake_me_up(mac, config, interface)
-            text = "Starting"
-            await update.message.reply_text(text)
-        elif context.user_data.get("action") == "status":
-            started = status_checker(mac, 0, config)
-            if not started:
-                text = "This ressource is down"
-                await update.message.reply_text(text)
+            if device_name == "all":
+                for device in device_names:
+                    mac, interface = get_data_from_name(device, name_to_mac_file)
+                    wake_me_up(mac, config, interface)
+                    text = f"Starting {device}"
+                    await update.message.reply_text(text)
             else:
-                text = "Up"
+                wake_me_up(mac, config, interface)
+                text = f"Starting {device_name}"
                 await update.message.reply_text(text)
+        elif context.user_data.get("action") == "status":
+            if device_name == "all":
+                for device in device_names:
+                    mac, interface = get_data_from_name(device, name_to_mac_file)
+                    started = status_checker(mac, 0, config)
+                    if not started:
+                        text = f"{device} is down"
+                        await update.message.reply_text(text)
+                    else:
+                        text = f"{device} Up"
+                        await update.message.reply_text(text)
+            else:
+                started = status_checker(mac, 0, config)
+                if not started:
+                    text = f"{device_name} down"
+                    await update.message.reply_text(text)
+                else:
+                    text = f"{device_name} Up"
+                    await update.message.reply_text(text)
         context.user_data["action"] = None
 
 
