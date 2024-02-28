@@ -100,14 +100,26 @@ async def status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     last_message = update.message.text
     if re.match(r"/status\s{1,}[^\s]+\s{0,}", last_message):
         device_name = last_message.split(" ")[-1] if last_message.split(" ")[-1] != "" else last_message.spliti(" ")[-2]
-        mac, interface = get_data_from_name(device_name, name_to_mac_file)
-        started = status_checker(mac, 0, config)
-        if not started:
-            text = "This ressource is down"
-            await update.message.reply_text(text)
+        if device_name == "all":
+            device_names = get_devices(name_to_mac_file)
+            for device in device_names:
+                mac, interface = get_data_from_name(device, name_to_mac_file)
+                started = status_checker(mac, 0, config)
+                if not started:
+                    text = f"{device} is down"
+                    await update.message.reply_text(text)
+                else:
+                    text = f"{device} Up"
+                    await update.message.reply_text(text)
         else:
-            text = "Up"
-            await update.message.reply_text(text)
+            mac, interface = get_data_from_name(device_name, name_to_mac_file)
+            started = status_checker(mac, 0, config)
+            if not started:
+                text = "This ressource is down"
+                await update.message.reply_text(text)
+            else:
+                text = "Up"
+                await update.message.reply_text(text)
     else:
         context.user_data["action"] = "status"
         device_names = get_devices(name_to_mac_file)
@@ -128,13 +140,21 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         message_text = last_message.split(" ")
         #starting_time = message_text[-1] if message_text[-1].isdigit() and len(message_text) == 3 else 40
         device_name = message_text[1]
-        mac, interface = get_data_from_name(device_name, name_to_mac_file)
-        if not mac:
-            text = "ERROR: device_name_not_in_database send /devices to print known devices"
+        if device_name == "all":
+            device_names = get_devices(name_to_mac_file)
+            for device in device_names:
+                mac, interface = get_data_from_name(device, name_to_mac_file)
+                wake_me_up(mac, config, interface)
+                text = f"Starting {device}"
+                await update.message.reply_text(text)
+        else:
+            mac, interface = get_data_from_name(device_name, name_to_mac_file)
+            if not mac:
+                text = "ERROR: device_name_not_in_database send /devices to print known devices"
+                await update.message.reply_text(text)
+            wake_me_up(mac, config, interface)
+            text = "Starting device"
             await update.message.reply_text(text)
-        wake_me_up(mac, config, interface)
-        text = "Starting device"
-        await update.message.reply_text(text)
     else:
         context.user_data["action"] = "start"
         device_names = get_devices(name_to_mac_file)
