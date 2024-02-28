@@ -1,13 +1,1 @@
-Webhook telegram
-
-Lancement et gestion seule
-
-Temps d'attente pour le démarrage
-
-Choix d'interfaces pour les magic packets
-
-Plusieurs réseaux donc l'ajout
-
-Faire un logger
-
-Ajouter un checker pour une certaine a=machine
+Fix status checker not working every time
