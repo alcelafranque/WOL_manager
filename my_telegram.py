@@ -107,6 +107,13 @@ async def run_multiple_status(update: Update, device_names):
             text = f"{device} Up"
             await update.message.reply_text(text)
 
+async def run_multiple_start(update: Update, device_names):
+    for device in device_names:
+        mac, interface = get_data_from_name(device, name_to_mac_file)
+        wake_me_up(mac, config, interface)
+        text = f"Starting {device}"
+        await update.message.reply_text(text)
+
 
 async def status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     last_message = update.message.text
@@ -146,11 +153,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         device_name = message_text[1]
         if device_name == "all":
             device_names = get_devices(name_to_mac_file)
-            for device in device_names:
-                mac, interface = get_data_from_name(device, name_to_mac_file)
-                wake_me_up(mac, config, interface)
-                text = f"Starting {device}"
-                await update.message.reply_text(text)
+            await run_multiple_start(update, device_names)
         else:
             mac, interface = get_data_from_name(device_name, name_to_mac_file)
             if not mac:
@@ -184,11 +187,7 @@ async def select_device(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         device_names = get_devices(name_to_mac_file)
         if context.user_data.get("action") == "start":
             if device_name == "all":
-                for device in device_names:
-                    mac, interface = get_data_from_name(device, name_to_mac_file)
-                    wake_me_up(mac, config, interface)
-                    text = f"Starting {device}"
-                    await update.message.reply_text(text)
+                await run_multiple_start(update, device_names)
             else:
                 wake_me_up(mac, config, interface)
                 text = f"Starting {device_name}"
