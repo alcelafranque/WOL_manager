@@ -112,7 +112,7 @@ async def status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         context.user_data["action"] = "status"
         device_names = get_devices(name_to_mac_file)
         if device_names:
-            keyboard = [[device] for device in device_names][0].append(["all"])
+            keyboard = [[device] for device in device_names]
             reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True)
             await update.message.reply_text(
                 "Which devices to check?:", reply_markup=reply_markup
