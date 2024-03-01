@@ -129,7 +129,7 @@ async def status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                 text = "This ressource is down"
                 await update.message.reply_text(text)
             else:
-                text = "Up"
+                text = f"{device_name} is up"
                 await update.message.reply_text(text)
     else:
         context.user_data["action"] = "status"
@@ -198,10 +198,10 @@ async def select_device(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
             else:
                 started = status_checker(mac, 0, config)
                 if not started:
-                    text = f"{device_name} down"
+                    text = f"{device_name} is down"
                     await update.message.reply_text(text)
                 else:
-                    text = f"{device_name} Up"
+                    text = f"{device_name} is up"
                     await update.message.reply_text(text)
         context.user_data["action"] = None
 
