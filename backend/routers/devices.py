@@ -1,3 +1,5 @@
+from libs.devices import get_devices
+
 from fastapi import APIRouter
 
 devices = APIRouter(
@@ -6,5 +8,6 @@ devices = APIRouter(
 )
 
 @devices.get("/devices")
-def get_devices():
-    return {"message": "OK"}
+def retrieve_devices():
+    devices = get_devices()
+    return {"devices": devices}
