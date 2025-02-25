@@ -12,15 +12,15 @@ app.include_router(devices_router)
 
 # Set CORS settings
 origins = [
-    "http://localhost:8000",
+    "*",
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins="*",
+    allow_origins=origins,
     # allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["GET", "POST", "OPTIONS"]
+    allow_methods=["GET", "POST"],
+    allow_headers=["GET", "POST"]
 )
 
 2
