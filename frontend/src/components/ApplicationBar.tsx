@@ -26,6 +26,7 @@ const ApplicationBar = () => {
       <Container sx={{
           alignItems: 'center',
           width: "80%",
+          padding: "10px"
         }}>
           <Grid container spacing={2} style={{justifyContent: "center"}} size={{md: 10, lg: 8, xl: 6}}>
                   <AppBar position="static" style={{backgroundColor: 'grey'}}>
