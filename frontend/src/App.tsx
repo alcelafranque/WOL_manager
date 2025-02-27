@@ -7,10 +7,9 @@ import {Devices} from "./components/Devices";
 
 interface RouteCreatorInterface {
     name: string;
-    url: string;
 }
 
-const RouteCreator: React.FC<RouteCreatorInterface> = ({name, url}) => {
+const RouteCreator: React.FC<RouteCreatorInterface> = ({name}) => {
     if (name == config.routes.devices) {
         return (
             <Box sx={{
@@ -20,19 +19,20 @@ const RouteCreator: React.FC<RouteCreatorInterface> = ({name, url}) => {
                 <Devices />
             </Box>
         )
-
+    } else {
+        return (
+            <Box sx={{
+                    height: "100vh",
+                  }}>
+                <ApplicationBar/>
+            </Box>
+        )
     }
-    return (
-        <Box sx={{
-                height: "100vh",
-              }}>
-            <ApplicationBar/>
-        </Box>)
+
 }
 
 const App = () => {
   let routes: string[] = [];
-  const url: string = config.backend_url;
   for (let key in config.routes) {
       routes.push(config.routes[key]);
   }
@@ -41,7 +41,7 @@ const App = () => {
     <BrowserRouter>
       <Routes>
           {routes.map((route) => (
-                <Route key={route} path={route} element={<RouteCreator name={route} url={url} />}/>
+                <Route key={route} path={route} element={<RouteCreator name={route} />}/>
               ))
           }
           <Route path="/" element={<Navigate to={config.routes.devices} />} />
