@@ -15,6 +15,7 @@ export const Devices: React.FC<DevicesProps> = () => {
     }
 
     useEffect(() => {
+
         get_devices();
     }, [])
 
