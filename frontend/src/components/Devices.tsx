@@ -1,11 +1,14 @@
 import React, {useEffect, useState} from "react";
 import {send_request} from "../utils/requests";
 import config from "../config.d/config.yaml";
+
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
 import Grid from '@mui/material/Grid2';
 
 import {Device} from '../utils/types';
 import {DeviceCard} from "../utils/Devices/DeviceCard";
-import Container from "@mui/material/Container";
+
 
 interface DevicesProps {
 
@@ -32,25 +35,32 @@ export const Devices: React.FC<DevicesProps> = () => {
 
     return (
         <Container sx={{
-          alignItems: 'center',
-          width: "80%",
-          padding: "10px",
-          justifyContent: 'center',
-          display: "flex"
+            alignItems: 'center',
+            width: "80%",
+            padding: "10px",
+            justifyContent: 'center',
+            display: "flex"
         }}>
-            <Grid padding={"10px"} container spacing={1} sx={{
+            <Box sx={{
                 width: '90%',
-                border: "1px solid",
             }}>
-                {devices.map((device, index) => (
-                    <Grid size={4} key={index} border={"1px solid"} spacing={1} sx={{
-                        display: "flex",
-                        justifyContent: 'center'
-                    }}>
-                        <DeviceCard device={device}></DeviceCard>
-                    </Grid>
-                ))}
-            </Grid>
+                Devices
+                <Grid padding={"10px"} container spacing={1} sx={{
+                    border: "1px solid",
+                }}>
+
+                    {devices.map((device, index) => (
+                        <Grid size={4} key={index} border={"1px solid"} spacing={1} sx={{
+                            display: "flex",
+                            justifyContent: 'center'
+                        }}>
+                            <DeviceCard device={device}></DeviceCard>
+                        </Grid>
+                    ))}
+                </Grid>
+
+            </Box>
+
         </Container>
     )
 }
