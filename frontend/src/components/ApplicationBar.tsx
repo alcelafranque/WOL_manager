@@ -31,24 +31,6 @@ const ApplicationBar = () => {
           <Grid container spacing={2} style={{justifyContent: "center"}} size={{md: 10, lg: 8, xl: 6}}>
                   <AppBar position="static" style={{backgroundColor: 'grey'}}>
                     <Toolbar>
-                      <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                        {pages.map((page) => (
-                          <Button
-                            key={page}
-                            sx={{ my: 2, color: 'white', display: 'block', fontSize: {
-                                sm: '1.5rem',
-                                md: '1.25rem',
-                                lg: '0.9rem'
-                              }
-                            }}
-                            onClick={() => {
-                                Navigation(page);
-                            }}
-                          >
-                            {page}
-                          </Button>
-                        ))}
-                      </Box>
                     </Toolbar>
                   </AppBar>
           </Grid>
