@@ -4,6 +4,8 @@ import config from "../config.d/config.yaml";
 import Grid from '@mui/material/Grid2';
 
 import {Device} from '../utils/types';
+import {DeviceCard} from "../utils/Devices/DeviceCard";
+import Container from "@mui/material/Container";
 
 interface DevicesProps {
 
@@ -29,16 +31,26 @@ export const Devices: React.FC<DevicesProps> = () => {
     }, [])
 
     return (
-        <Grid padding={"10px"} container rowSpacing={1} sx={{
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    alignContent: 'center'
-                }}>
-            {devices.map((device, index) => (
-                <Grid size={4} key={index}>
-                    {device.hostname}
-                </Grid>
-            ))}
-        </Grid>
+        <Container sx={{
+          alignItems: 'center',
+          width: "80%",
+          padding: "10px",
+          justifyContent: 'center',
+          display: "flex"
+        }}>
+            <Grid padding={"10px"} container spacing={1} sx={{
+                width: '90%',
+                border: "1px solid",
+            }}>
+                {devices.map((device, index) => (
+                    <Grid size={4} key={index} border={"1px solid"} spacing={1} sx={{
+                        display: "flex",
+                        justifyContent: 'center'
+                    }}>
+                        <DeviceCard device={device}></DeviceCard>
+                    </Grid>
+                ))}
+            </Grid>
+        </Container>
     )
 }
