@@ -8,6 +8,7 @@ import Grid from '@mui/material/Grid2';
 
 import {Device} from '../utils/types';
 import {DeviceCard} from "../utils/Devices/DeviceCard";
+import {DeviceRegister} from "../utils/Devices/DeviceRegister";
 
 
 interface DevicesProps {
@@ -59,6 +60,7 @@ export const Devices: React.FC<DevicesProps> = () => {
                     ))}
                 </Grid>
 
+                    <DeviceRegister setDevices={setDevices}/>
             </Box>
 
         </Container>
