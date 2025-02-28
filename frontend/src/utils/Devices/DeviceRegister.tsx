@@ -17,7 +17,8 @@ export const DeviceRegister: React.FC<DeviceRegisterProps> = ({setDevices}) => {
         }}>
             Register device
             <Grid container sx={{
-                border: '1px solid'
+                border: '1px solid',
+                padding: '10px'
             }}>
                 {fields.map(field => (
                     <>
