@@ -1,6 +1,7 @@
 from core.database import get_db
 
 import sys
+import time
 from io import StringIO
 
 import paramiko
@@ -34,6 +35,7 @@ def status_checker(mac: str, config: dict):
     ssh.connect(router_ip, username=router_hostname, password=mdp, key_filename=ssh_filename)
 
     for i in range(5):
+        time.sleep(1)
         stdin, stdout, stderr = ssh.exec_command("ip neigh")
         buffer = StringIO()
         sys.stdout = buffer
