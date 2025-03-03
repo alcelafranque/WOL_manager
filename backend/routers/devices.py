@@ -1,5 +1,4 @@
 from core.config import get_config
-from libs.devices import  status_checker
 from schemas.devices import Device
 
 from fastapi import APIRouter
@@ -19,6 +18,7 @@ def retrieve_devices():
     return {"devices": devices}
 
 @devices.post("/status")
-def get_status(mac: Mac):
-    status = status_checker(mac.mac, config)
+def get_status(device: Device):
+    device = Device(**device.dict())
+    status = device.check_status(config)
     return {"status": status}
