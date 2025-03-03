@@ -1,12 +1,9 @@
-from libs.devices import get_devices, status_checker
 from core.config import get_config
+from libs.devices import  status_checker
+from schemas.devices import Device
 
 from fastapi import APIRouter
-from pydantic import BaseModel
 
-
-class Mac(BaseModel):
-    mac: str
 
 devices = APIRouter(
     prefix="",
@@ -18,7 +15,7 @@ config = get_config()
 
 @devices.get("/devices")
 def retrieve_devices():
-    devices = get_devices()
+    devices = Device.get_devices()
     return {"devices": devices}
 
 @devices.post("/status")
