@@ -19,8 +19,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     # allow_credentials=True,
-    allow_methods=["GET", "POST"],
-    allow_headers=["GET", "POST"]
+    allow_methods=["OPTIONS", "GET", "POST"],
+    allow_headers=["OPTIONS", "GET", "POST"]
 )
 
 2
@@ -31,4 +31,4 @@ def read_root():
 
 
 if __name__ == '__main__':
-    uvicorn.run(app, host='0.0.0.0', port=8000)
+    uvicorn.run("main:app", host='0.0.0.0', port=8000, workers=4)

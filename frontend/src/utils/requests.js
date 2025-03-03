@@ -4,6 +4,12 @@ const route_mapping = {
         method: "GET",
         content_type: "application/json",
         response_type: "json"
+    },
+    status: {
+        route: "status",
+        method: "POST",
+        content_type: "application/json",
+        response_type: "json"
     }
 }
 
@@ -21,7 +27,7 @@ export async function send_request(url, target, data){
             headers: {
                 "Content-Type": content_type
             },
-            body: data
+            body: JSON.stringify(data)
         }
     } else {
         request_data = {

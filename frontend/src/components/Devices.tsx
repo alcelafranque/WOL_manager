@@ -21,7 +21,6 @@ export const Devices: React.FC<DevicesProps> = () => {
     const get_devices = async () => {
         const response = await send_request(config.backend_url, "devices", {});
         const json_response = await response.json();
-        console.log(json_response);
 
         if ("devices" in json_response)
         {
@@ -43,17 +42,19 @@ export const Devices: React.FC<DevicesProps> = () => {
             display: "flex"
         }}>
             <Box sx={{
-                width: '90%',
+                width: '90%'
             }}>
                 Devices
                 <Grid padding={"10px"} container spacing={1} sx={{
                     border: "1px solid",
+                    backgroundColor: "#FFEE93"
                 }}>
 
                     {devices.map((device, index) => (
                         <Grid size={4} key={index} border={"1px solid"} spacing={1} sx={{
                             display: "flex",
-                            justifyContent: 'center'
+                            justifyContent: 'center',
+                            backgroundColor: '#FCF5C7'
                         }}>
                             <DeviceCard device={device}></DeviceCard>
                         </Grid>
