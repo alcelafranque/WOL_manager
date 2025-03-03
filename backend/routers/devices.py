@@ -23,6 +23,5 @@ def retrieve_devices():
 
 @devices.post("/status")
 def get_status(mac: Mac):
-    print(mac)
     status = status_checker(mac.mac, config)
     return {"status": status}
