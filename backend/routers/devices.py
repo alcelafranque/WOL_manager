@@ -21,13 +21,11 @@ def retrieve_devices():
 
 @devices.post("/status")
 def get_status(device: Device):
-    device = Device(**device.dict())
     status = device.check_status(config)
     return {"status": status}
 
 
 @devices.post("/start")
 def start_device(device: Device):
-    device = Device(**device.dict())
     device.start(config)
     return
