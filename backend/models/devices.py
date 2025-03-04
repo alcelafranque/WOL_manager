@@ -36,3 +36,19 @@ class Device(Base):
         finally:
             db.close()
             return devices
+
+
+    @classmethod
+    def add_device(cls, device: Self) -> None:
+        """
+        Delete device from the database
+        """
+        db = get_db()
+        try:
+            device_instance = cls(**device)
+            db.add(device_instance)
+
+            # Save changes
+            db.commit()
+        finally:
+            db.close()

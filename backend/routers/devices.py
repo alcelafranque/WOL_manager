@@ -29,3 +29,8 @@ def get_status(device: Device):
 def start_device(device: Device):
     device.start(config)
     return
+
+
+@devices.post("/register")
+def register_device(device: Device):
+    device.register()

@@ -89,3 +89,10 @@ class Device(BaseModel):
             # Sending packet inside the subnet
             # TODO: let non router send the wol packet
             pass
+
+
+    def register(self) -> None:
+        """
+        Register new device
+        """
+        DeviceModel.add_device(self.dict())
