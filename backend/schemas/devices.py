@@ -18,7 +18,7 @@ class Device(BaseModel):
 
 
     @classmethod
-    def get_devices(cls):
+    def get_devices(cls) -> list[DeviceModel]:
         """
         Get all devices.
         """
@@ -26,7 +26,7 @@ class Device(BaseModel):
         return devices
 
 
-    def check_status(self, config: dict):
+    def check_status(self, config: dict) -> bool:
         """
         Check if device is up using arp table of the router.
         :param mac: mac address of the given device
