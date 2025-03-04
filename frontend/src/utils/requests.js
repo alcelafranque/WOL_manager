@@ -10,6 +10,12 @@ const route_mapping = {
         method: "POST",
         content_type: "application/json",
         response_type: "json"
+    },
+    start: {
+        route: "start",
+        method: "POST",
+        content_type: "application/json",
+        response_type: "json"
     }
 }
 

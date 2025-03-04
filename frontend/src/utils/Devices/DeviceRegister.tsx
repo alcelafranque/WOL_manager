@@ -1,8 +1,7 @@
 import {Device} from "../types";
 import React from "react";
-import {Box, TextField, Typography} from "@mui/material";
+import {TextField} from "@mui/material";
 import Grid from '@mui/material/Grid2';
-import {Button} from "@mui/material";
 
 interface DeviceRegisterProps {
     setDevices: React.Dispatch<React.SetStateAction<Array<Device>>>;
