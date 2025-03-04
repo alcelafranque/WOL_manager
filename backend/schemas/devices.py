@@ -1,4 +1,5 @@
 from models.devices import Device as DeviceModel
+from libs.wake_me_up import wake_me_up
 
 from io import StringIO
 
@@ -71,3 +72,20 @@ class Device(BaseModel):
                         return True
         ssh.close()
         return False
+
+
+    def start(self, config: dict) -> None:
+        """
+        Send wake on lan packet to this device.
+        Check if packets must be sent inside or outside the subnet.
+        :param config: config of the project
+        :return:
+        """
+
+        # Check if sending packet outside the subnet
+        if self.interface:
+            wake_me_up(mac=self.mac, config=config, interface=self.interface)
+        else:
+            # Sending packet inside the subnet
+            # TODO: let non router send the wol packet
+            pass
