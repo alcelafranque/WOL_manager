@@ -23,6 +23,10 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({device}) => {
         }
     }
 
+    const start_device = async () => {
+        await send_request(config.backend_url, "start", device);
+    }
+
     useEffect(() => {
         setInterval(get_status, 5000);
     }, [])
@@ -35,7 +39,7 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({device}) => {
             <div>
                 status: {status ? "True" : "False"}
             </div>
-            <Button variant={"text"} sx={{color: '#FFC09F'}}>
+            <Button variant={"text"} onClick={start_device} sx={{color: '#FFC09F'}}>
                 Start
             </Button>
         </Box>
