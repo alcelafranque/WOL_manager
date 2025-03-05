@@ -28,11 +28,13 @@ class Device(BaseModel):
 
 
     @classmethod
-    def get_devices(cls) -> list[DeviceModel]:
+    def get_devices(cls) -> list[Self]:
         """
         Get all devices.
         """
         devices = DeviceModel.get_devices()
+        for device in devices:
+            device.mac = device.mac.lower()
 
         return devices
 
