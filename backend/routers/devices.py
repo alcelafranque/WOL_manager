@@ -26,7 +26,9 @@ def retrieve_devices():
 
 @devices.post("/status")
 def get_status(device: Device):
-    status = device.check_status(config)
+    if device.mac not in status_checker.mapping.keys():
+        return {"status": False}
+    status = status_checker.devices_status[device.mac]
     return {"status": status}
 
 
