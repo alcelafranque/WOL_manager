@@ -102,6 +102,13 @@ class Device(BaseModel):
         if not self.is_valid():
             return 400
 
+        devices = self.get_devices()
+
+        # Check for duplicate
+        for device in devices:
+            if device.mac == self.mac:
+                return 409
+
         DeviceModel.add_device(self.dict())
         return 200
 
