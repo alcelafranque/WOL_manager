@@ -1,7 +1,9 @@
 import {Device} from "../types";
-import React, {useState, ChangeEvent} from "react";
-import {TextField} from "@mui/material";
+import React, {useState} from "react";
+import {Button, TextField} from "@mui/material";
 import Grid from '@mui/material/Grid2';
+import {send_request} from "../requests";
+import config from "../../config.d/config.yaml";
 
 
 interface FieldEntryProps {
@@ -44,6 +46,18 @@ export const DeviceRegister: React.FC<DeviceRegisterProps> = ({setDevices}) => {
   const [mac, setMac] = useState<string>("");
   const [deviceInterface, setDeviceInterface] = useState<string>("");
 
+  const register_device = async () => {
+        // Create device from form data
+        const new_device: Device = {
+            hostname: hostname,
+            mac: mac,
+            interface: deviceInterface
+        }
+        
+        await send_request(config.backend_url, "register", new_device);
+        setDevices([]);
+    }
+
     return (
         <div style={{
             padding: '10px'
@@ -56,7 +70,11 @@ export const DeviceRegister: React.FC<DeviceRegisterProps> = ({setDevices}) => {
                 <FieldEntry inputData={hostname} setInputData={setHostname} title={"Hostname"}/>
                 <FieldEntry inputData={mac} setInputData={setMac} title={"Mac"}/>
                 <FieldEntry inputData={deviceInterface} setInputData={setDeviceInterface} title={"Interface"}/>
+                <Button variant={"text"} onClick={register_device} sx={{color: '#FFC09F'}}>
+                    Register
+                </Button>
             </Grid>
+
         </div>
     );
 }
