@@ -57,7 +57,7 @@ export const Devices: React.FC<DevicesProps> = () => {
                             justifyContent: 'center',
                             backgroundColor: '#FCF5C7'
                         }}>
-                            <DeviceCard device={device}></DeviceCard>
+                            <DeviceCard device={device} setDevices={setDevices}/>
                         </Grid>
                     ))}
                 </Grid>
