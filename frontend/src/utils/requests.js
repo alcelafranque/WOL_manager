@@ -16,6 +16,18 @@ const route_mapping = {
         method: "POST",
         content_type: "application/json",
         response_type: "json"
+    },
+    register: {
+        route: "register",
+        method: "POST",
+        content_type: "application/json",
+        response_type: "json"
+    },
+    delete: {
+        route: "delete",
+        method: "POST",
+        content_type: "application/json",
+        response_type: "json"
     }
 }
 
@@ -44,11 +56,5 @@ export async function send_request(url, target, data){
         }
     }
 
-    let response = await fetch(url + "/" + route, request_data);
-
-    if (!response.ok) {
-      throw new Error("Error during request to ", route);
-    }
-
-    return response;
+    return await fetch(url + "/" + route, request_data);
 }
