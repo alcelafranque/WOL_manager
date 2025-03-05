@@ -19,8 +19,8 @@ class Device(Base):
     """
 
     __tablename__ = 'devices'
-    hostname = Column(String, primary_key=True)
-    mac = Column(String)
+    hostname = Column(String)
+    mac = Column(String, primary_key=True)
     interface = Column(String)
 
 
