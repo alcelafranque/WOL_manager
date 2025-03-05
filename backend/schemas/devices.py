@@ -1,6 +1,8 @@
 from models.devices import Device as DeviceModel
 
-from pydantic import BaseModel, field_validator
+from typing import Self
+
+from pydantic import BaseModel, field_validator, AfterValidator
 from re import match
 from wakeonlan import send_magic_packet
 
@@ -10,7 +12,7 @@ class Device(BaseModel):
     mac: str
     interface: str
 
-    @field_validator('mac')
+    @field_validator('mac', mode="after")
     @classmethod
     def is_valid(cls, mac: str) -> bool:
         """
