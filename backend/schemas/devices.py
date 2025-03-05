@@ -1,13 +1,9 @@
 from models.devices import Device as DeviceModel
 from libs.wake_me_up import wake_me_up
 
-from io import StringIO
-
-import sys
-import time
-
 from pydantic import BaseModel, field_validator
 from re import match
+from wakeonlan import send_magic_packet
 
 import paramiko
 
@@ -52,13 +48,7 @@ class Device(BaseModel):
         :return:
         """
 
-        # Check if sending packet outside the subnet
-        if self.interface:
-            wake_me_up(mac=self.mac, config=config, interface=self.interface)
-        else:
-            # Sending packet inside the subnet
-            # TODO: let non router send the wol packet
-            pass
+        send_magic_packet(self.mac)
 
 
     def register(self) -> int:
