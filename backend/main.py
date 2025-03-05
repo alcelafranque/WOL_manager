@@ -11,6 +11,7 @@ import uvicorn
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    status_checker.devices = Device.get_devices()
     status_checker.run()
     yield
 
