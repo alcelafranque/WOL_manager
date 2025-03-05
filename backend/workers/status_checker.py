@@ -64,8 +64,10 @@ class StatusChecker:
                             self.devices_status[mac] = True if status == "REACHABLE" else False
                             targeted_mac.remove(mac)
 
+            # mac not in ARP table
             for mac in targeted_mac:
                 self.devices_status[mac] = False
+                self.mapping[mac] = None
 
         except subprocess.CalledProcessError:
             return
