@@ -30,11 +30,10 @@ class StatusChecker:
         :return: True if device is up, False otherwise
         """
 
-        try:
-            nm = nmap.PortScanner()
-            nm.scan(hosts=self.network, arguments='-sn -PE')
-        except nmap.PortScannerError:
-            return
+        for device in self.devices:
+            # Scan network if mac previously not found in the ARP table
+            if not self.mapping[device.mac]:
+                self.scan()
 
         try:
             result = subprocess.run(['ip', 'neigh'], capture_output=True, text=True, check=True)
@@ -70,4 +69,15 @@ class StatusChecker:
                 self.mapping[mac] = None
 
         except subprocess.CalledProcessError:
+            return
+
+
+    def scan(self):
+        """
+        Scan network using nmap to fill arp table.
+        """
+        try:
+            nm = nmap.PortScanner()
+            nm.scan(hosts=self.network, arguments='-sn -PE')
+        except nmap.PortScannerError:
             return
