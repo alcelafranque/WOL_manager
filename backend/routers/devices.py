@@ -1,5 +1,6 @@
 from core.config import get_config
 from schemas.devices import Device
+from workers.status_checker import StatusChecker
 
 from fastapi import APIRouter, HTTPException
 
@@ -11,6 +12,9 @@ devices = APIRouter(
 
 # Get config
 config = get_config()
+
+# Create status checker instance
+status_checker = StatusChecker(config["network"])
 
 
 @devices.get("/devices")
