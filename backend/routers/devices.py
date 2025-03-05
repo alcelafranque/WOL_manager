@@ -20,6 +20,7 @@ status_checker = StatusChecker(config["network"])
 @devices.get("/devices")
 def retrieve_devices():
     devices = Device.get_devices()
+    status_checker.devices = devices
     return {"devices": devices}
 
 
