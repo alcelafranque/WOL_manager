@@ -34,7 +34,7 @@ def get_status(device: Device):
 
 @devices.post("/start")
 def start_device(device: Device):
-    device.start(config)
+    device.start()
     return
 
 
