@@ -28,7 +28,7 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({device}) => {
     }
 
     useEffect(() => {
-        setInterval(get_status, 5000);
+        setInterval(get_status, 10000);
     }, [])
 
     return (
