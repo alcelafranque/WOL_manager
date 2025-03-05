@@ -25,7 +25,7 @@ class Device(BaseModel):
         if not match(mac_regex, mac):
             raise ValueError('"foobar" not found in a')
 
-        return mac
+        return mac.lower()
 
 
     @classmethod
@@ -34,8 +34,6 @@ class Device(BaseModel):
         Get all devices.
         """
         devices = DeviceModel.get_devices()
-        for device in devices:
-            device.mac = device.mac.lower()
 
         return devices
 
