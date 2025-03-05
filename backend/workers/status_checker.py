@@ -29,8 +29,12 @@ class StatusChecker:
 
         for device in self.devices:
             # Scan network if mac previously not found in the ARP table
+            if not device.mac in self.mapping:
+                self.scan()
+                break
             if not self.mapping[device.mac]:
                 self.scan()
+                break
 
         try:
             result = subprocess.run(['ip', 'neigh'], capture_output=True, text=True, check=True)
