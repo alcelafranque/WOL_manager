@@ -7,6 +7,7 @@ import sys
 import time
 
 from pydantic import BaseModel
+from re import match
 
 import paramiko
 
@@ -91,8 +92,28 @@ class Device(BaseModel):
             pass
 
 
-    def register(self) -> None:
+    def register(self) -> int:
         """
         Register new device
+        :return: status code
         """
+
+        # Check for valid mac
+        if not self.is_valid():
+            return 400
+
         DeviceModel.add_device(self.dict())
+        return 200
+
+
+    def is_valid(self) -> bool:
+        """
+        Check if device fields are valid.
+        :return: False if any field is invalid else True
+        """
+        # Check for valid mac
+        mac_regex = r"([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}"
+        if not match(mac_regex, self.mac):
+            return False
+
+        return True
