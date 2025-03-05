@@ -55,11 +55,17 @@ class StatusChecker:
 
                         if mac and mac in targeted_mac:
                             status = parts[-1] if len(parts) > 5 else ""
+
                             # Store mac along its IP
                             ip = parts[0]
                             self.mapping[mac] = ip
+
+                            # Check for status
                             self.devices_status[mac] = True if status == "REACHABLE" else False
                             targeted_mac.remove(mac)
+
+            for mac in targeted_mac:
+                self.devices_status[mac] = False
 
         except subprocess.CalledProcessError:
             return
