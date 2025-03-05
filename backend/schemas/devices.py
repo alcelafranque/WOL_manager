@@ -1,11 +1,8 @@
 from models.devices import Device as DeviceModel
-from libs.wake_me_up import wake_me_up
 
 from pydantic import BaseModel, field_validator
 from re import match
 from wakeonlan import send_magic_packet
-
-import paramiko
 
 
 class Device(BaseModel):

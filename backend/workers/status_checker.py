@@ -1,10 +1,7 @@
 import subprocess
 import threading
 
-from wakeonlan import send_magic_packet
-
 import nmap
-import paramiko
 
 
 class StatusChecker:
