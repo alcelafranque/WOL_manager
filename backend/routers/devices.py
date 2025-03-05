@@ -39,3 +39,9 @@ def register_device(device: Device):
         raise HTTPException(status_code=status_code)
 
     return
+
+
+@devices.post("/delete")
+def delete_device(device: Device):
+    device.delete()
+    return

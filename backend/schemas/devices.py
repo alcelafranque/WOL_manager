@@ -121,3 +121,11 @@ class Device(BaseModel):
 
         DeviceModel.add_device(self.dict())
         return 200
+
+
+    def delete(self) -> None:
+        """
+        Delete device
+        :return: None
+        """
+        DeviceModel.delete_device(self.dict())

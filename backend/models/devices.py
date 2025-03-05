@@ -41,12 +41,28 @@ class Device(Base):
     @classmethod
     def add_device(cls, device: Self) -> None:
         """
-        Delete device from the database
+        Add device to the database.
         """
         db = get_db()
         try:
             device_instance = cls(**device)
             db.add(device_instance)
+
+            # Save changes
+            db.commit()
+        finally:
+            db.close()
+
+
+    @classmethod
+    def delete_device(cls, device: Self) -> None:
+        """
+        Delete device from the database.
+        """
+        db = get_db()
+        try:
+            device_instance = db.query(cls).filter(cls.mac == device["mac"]).first()
+            db.delete(device_instance)
 
             # Save changes
             db.commit()

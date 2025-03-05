@@ -29,7 +29,7 @@ const FieldEntry: React.FC<FieldEntryProps> = ({inputData, setInputData, title})
                 {title}:
             </Grid>
             <Grid size={8} >
-                <TextField value={inputData} onChange={handleInput}/>
+                <TextField fullWidth={true} value={inputData} onChange={handleInput}/>
             </Grid>
         </>
     )
@@ -53,7 +53,7 @@ export const DeviceRegister: React.FC<DeviceRegisterProps> = ({setDevices}) => {
             mac: mac,
             interface: deviceInterface
         }
-        
+
         await send_request(config.backend_url, "register", new_device);
         setDevices([]);
     }

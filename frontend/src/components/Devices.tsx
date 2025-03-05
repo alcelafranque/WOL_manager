@@ -29,8 +29,9 @@ export const Devices: React.FC<DevicesProps> = () => {
     }
 
     useEffect(() => {
-
-        get_devices();
+        if (Object.keys(devices).length == 0) {
+            get_devices();
+        }
     }, [devices])
 
     return (
@@ -56,7 +57,7 @@ export const Devices: React.FC<DevicesProps> = () => {
                             justifyContent: 'center',
                             backgroundColor: '#FCF5C7'
                         }}>
-                            <DeviceCard device={device}></DeviceCard>
+                            <DeviceCard device={device} setDevices={setDevices}/>
                         </Grid>
                     ))}
                 </Grid>

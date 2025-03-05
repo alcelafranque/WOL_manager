@@ -7,9 +7,10 @@ import config from "../../config.d/config.yaml";
 
 interface DeviceCardProps {
     device: Device;
+    setDevices: React.Dispatch<React.SetStateAction<Array<Device>>>;
 }
 
-export const DeviceCard: React.FC<DeviceCardProps> = ({device}) => {
+export const DeviceCard: React.FC<DeviceCardProps> = ({device, setDevices}) => {
 
     const [status, setStatus] = useState(false);
 
@@ -27,8 +28,13 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({device}) => {
         await send_request(config.backend_url, "start", device);
     }
 
+    const delete_device = async () => {
+        await send_request(config.backend_url, "delete", device);
+        setDevices([]);
+    }
+
     useEffect(() => {
-        setInterval(get_status, 5000);
+        setInterval(get_status, 10000);
     }, [])
 
     return (
@@ -41,6 +47,10 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({device}) => {
             </div>
             <Button variant={"text"} onClick={start_device} sx={{color: '#FFC09F'}}>
                 Start
+            </Button>
+
+            <Button variant={"text"} onClick={delete_device} sx={{color: '#FFC09F'}}>
+                Delete
             </Button>
         </Box>
     )
