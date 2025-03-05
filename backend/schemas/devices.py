@@ -6,7 +6,8 @@ from io import StringIO
 import sys
 import time
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
+from re import match
 
 import paramiko
 
@@ -15,6 +16,20 @@ class Device(BaseModel):
     hostname: str
     mac: str
     interface: str
+
+    @field_validator('mac')
+    @classmethod
+    def is_valid(cls, mac: str) -> bool:
+        """
+        Check if device fields are valid.
+        :return: False if any field is invalid else True
+        """
+        # Check for valid mac
+        mac_regex = r"([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}"
+        if not match(mac_regex, mac):
+            raise ValueError('"foobar" not found in a')
+
+        return mac
 
 
     @classmethod
@@ -89,3 +104,20 @@ class Device(BaseModel):
             # Sending packet inside the subnet
             # TODO: let non router send the wol packet
             pass
+
+
+    def register(self) -> int:
+        """
+        Register new device
+        :return: status code
+        """
+
+        devices = self.get_devices()
+
+        # Check for duplicate
+        for device in devices:
+            if device.mac == self.mac:
+                return 409
+
+        DeviceModel.add_device(self.dict())
+        return 200

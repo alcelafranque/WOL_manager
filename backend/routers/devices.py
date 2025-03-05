@@ -1,7 +1,7 @@
 from core.config import get_config
 from schemas.devices import Device
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 
 devices = APIRouter(
@@ -28,4 +28,14 @@ def get_status(device: Device):
 @devices.post("/start")
 def start_device(device: Device):
     device.start(config)
+    return
+
+
+@devices.post("/register")
+def register_device(device: Device):
+    status_code = device.register()
+
+    if status_code != 200:
+        raise HTTPException(status_code=status_code)
+
     return

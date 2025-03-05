@@ -31,7 +31,7 @@ export const Devices: React.FC<DevicesProps> = () => {
     useEffect(() => {
 
         get_devices();
-    }, [])
+    }, [devices])
 
     return (
         <Container sx={{
