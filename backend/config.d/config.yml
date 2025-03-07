@@ -1,4 +1,1 @@
-name_to_mac_file: ""
-path_to_private_key: ""
-router_ip: ""
-router_hostname: """
+network: "10.0.0.0/24"
