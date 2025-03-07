@@ -2,15 +2,11 @@
 This file is useful to abstract database implementation
 """
 
-from core.database import get_db
+from core.database import get_db, Base
 
 from typing import Self
 
 from sqlalchemy import Column, String, func
-from sqlalchemy.orm import declarative_base
-
-
-Base = declarative_base()
 
 
 class Device(Base):
