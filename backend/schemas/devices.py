@@ -22,7 +22,7 @@ class Device(BaseModel):
         # Check for valid mac
         mac_regex = r"([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}"
         if not match(mac_regex, mac):
-            raise ValueError('"foobar" not found in a')
+            raise ValueError('Invalid MAC address')
 
         return mac.lower()
 
