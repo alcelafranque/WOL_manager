@@ -10,7 +10,7 @@ from wakeonlan import send_magic_packet
 class Device(BaseModel):
     hostname: str
     mac: str
-    interface: str
+    ip: str
 
     @field_validator('mac', mode="after")
     @classmethod

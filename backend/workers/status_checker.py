@@ -15,31 +15,37 @@ class StatusChecker:
 
 
     def run(self):
+        self.run_keep_status()
+        self.run_check_status()
+
+
+    def run_check_status(self):
+        """
+        Execute periodically check status.
+        """
         self.check_status()
-        threading.Timer(10, self.run).start()
+        threading.Timer(10, self.run_check_status).start()
+
+
+    def run_keep_status(self):
+        """
+        Execute periodically keep status.
+        """
+        self.keep_status_reachable()
+        threading.Timer(5, self.run_keep_status).start()
 
 
     def check_status(self):
         """
-        Check if device is up using arp table of the router.
+        Check if device is UP using arp table of the router.
         :param mac: mac address of the given device
         :param config: config of the project
-        :return: True if device is up, False otherwise
+        :return: True if device is UP, False otherwise
         """
-
-        for device in self.devices:
-            # Scan network if mac previously not found in the ARP table
-            if not device.mac in self.mapping:
-                self.scan()
-                break
-            if not self.mapping[device.mac]:
-                self.scan()
-                break
 
         try:
             result = subprocess.run(['ip', 'neigh'], capture_output=True, text=True, check=True)
 
-            # Get all mac of managed devices
             targeted_mac = [device.mac for device in self.devices]
             for line in result.stdout.strip().split('\n'):
                 if len(targeted_mac) == 0:
@@ -73,12 +79,11 @@ class StatusChecker:
             return
 
 
-    def scan(self):
+    def keep_status_reachable(self):
         """
-        Scan network using nmap to fill arp table.
+        Keep device in ARP table avoiding STALE, DELAY... states.
         """
-        try:
-            nm = nmap.PortScanner()
-            nm.scan(hosts=self.network, arguments='-sn -PE')
-        except nmap.PortScannerError:
-            return
+        for device in self.devices:
+            if not device.mac in self.mapping.keys() or not self.mapping[device.mac]:
+                continue
+            subprocess.run(['ping', '-c', '1', device.ip, '-W', '1'], stdout=subprocess.DEVNULL)

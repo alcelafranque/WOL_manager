@@ -21,7 +21,7 @@ class Device(Base):
     __tablename__ = 'devices'
     hostname = Column(String)
     mac = Column(String, primary_key=True)
-    interface = Column(String)
+    ip = Column(String)
 
 
     @classmethod
