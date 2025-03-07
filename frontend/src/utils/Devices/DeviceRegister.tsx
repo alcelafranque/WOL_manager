@@ -36,7 +36,6 @@ const FieldEntry: React.FC<FieldEntryProps> = ({inputData, setInputData, title})
 }
 
 
-
 interface DeviceRegisterProps {
     setDevices: React.Dispatch<React.SetStateAction<Array<Device>>>;
 }
@@ -44,14 +43,14 @@ interface DeviceRegisterProps {
 export const DeviceRegister: React.FC<DeviceRegisterProps> = ({setDevices}) => {
   const [hostname, setHostname] = useState<string>("");
   const [mac, setMac] = useState<string>("");
-  const [deviceInterface, setDeviceInterface] = useState<string>("");
+  const [deviceIP, setDeviceIP] = useState<string>("");
 
   const register_device = async () => {
         // Create device from form data
         const new_device: Device = {
             hostname: hostname,
             mac: mac,
-            interface: deviceInterface
+            interface: deviceIP
         }
 
         await send_request(config.backend_url, "register", new_device);
@@ -69,7 +68,7 @@ export const DeviceRegister: React.FC<DeviceRegisterProps> = ({setDevices}) => {
             }}>
                 <FieldEntry inputData={hostname} setInputData={setHostname} title={"Hostname"}/>
                 <FieldEntry inputData={mac} setInputData={setMac} title={"Mac"}/>
-                <FieldEntry inputData={deviceInterface} setInputData={setDeviceInterface} title={"Interface"}/>
+                <FieldEntry inputData={deviceIP} setInputData={setDeviceIP} title={"IP"}/>
                 <Button variant={"text"} onClick={register_device} sx={{color: '#FFC09F'}}>
                     Register
                 </Button>
