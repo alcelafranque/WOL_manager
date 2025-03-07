@@ -37,10 +37,10 @@ const FieldEntry: React.FC<FieldEntryProps> = ({inputData, setInputData, title})
 
 
 interface DeviceRegisterProps {
-    setDevices: React.Dispatch<React.SetStateAction<Array<Device>>>;
+    setToUpdate: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const DeviceRegister: React.FC<DeviceRegisterProps> = ({setDevices}) => {
+export const DeviceRegister: React.FC<DeviceRegisterProps> = ({setToUpdate}) => {
   const [hostname, setHostname] = useState<string>("");
   const [mac, setMac] = useState<string>("");
   const [deviceIP, setDeviceIP] = useState<string>("");
@@ -54,7 +54,7 @@ export const DeviceRegister: React.FC<DeviceRegisterProps> = ({setDevices}) => {
         }
 
         await send_request(config.backend_url, "register", new_device);
-        setDevices([]);
+        setToUpdate(true);
     }
 
     const update_device = async () => {
@@ -66,7 +66,7 @@ export const DeviceRegister: React.FC<DeviceRegisterProps> = ({setDevices}) => {
         }
 
         await send_request(config.backend_url, "update", new_device);
-        setDevices([]);
+        setToUpdate(true);
     }
 
     return (

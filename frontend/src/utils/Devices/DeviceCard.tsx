@@ -7,10 +7,10 @@ import config from "../../config.d/config.yaml";
 
 interface DeviceCardProps {
     device: Device;
-    setDevices: React.Dispatch<React.SetStateAction<Array<Device>>>;
+    setToUpdate: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const DeviceCard: React.FC<DeviceCardProps> = ({device, setDevices}) => {
+export const DeviceCard: React.FC<DeviceCardProps> = ({device, setToUpdate}) => {
 
     const [status, setStatus] = useState(false);
 
@@ -30,7 +30,7 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({device, setDevices}) => {
 
     const delete_device = async () => {
         await send_request(config.backend_url, "delete", device);
-        setDevices([]);
+        setToUpdate(true);
     }
 
     useEffect(() => {

@@ -17,6 +17,7 @@ interface DevicesProps {
 
 export const Devices: React.FC<DevicesProps> = () => {
     const [devices, setDevices] = useState<Array<Device>>([]);
+    const [toUpdate, setToUpdate] = useState(true);
 
     const get_devices = async () => {
         const response = await send_request(config.backend_url, "devices", {});
@@ -29,10 +30,11 @@ export const Devices: React.FC<DevicesProps> = () => {
     }
 
     useEffect(() => {
-        if (Object.keys(devices).length == 0) {
+        if (toUpdate) {
+            setToUpdate(false);
             get_devices();
         }
-    }, [devices])
+    }, [toUpdate])
 
     return (
         <Container sx={{
@@ -57,12 +59,12 @@ export const Devices: React.FC<DevicesProps> = () => {
                             justifyContent: 'center',
                             backgroundColor: '#FCF5C7'
                         }}>
-                            <DeviceCard device={device} setDevices={setDevices}/>
+                            <DeviceCard device={device} setToUpdate={setToUpdate}/>
                         </Grid>
                     ))}
                 </Grid>
 
-                    <DeviceRegister setDevices={setDevices}/>
+                    <DeviceRegister setToUpdate={setToUpdate}/>
             </Box>
 
         </Container>
