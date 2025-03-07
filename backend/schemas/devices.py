@@ -73,3 +73,10 @@ class Device(BaseModel):
         :return: None
         """
         DeviceModel.delete_device(self.dict())
+
+
+    def update(self) -> None:
+        """
+        Update device values
+        """
+        DeviceModel.update_device(self.dict())

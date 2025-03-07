@@ -57,6 +57,18 @@ export const DeviceRegister: React.FC<DeviceRegisterProps> = ({setDevices}) => {
         setDevices([]);
     }
 
+    const update_device = async () => {
+        // Create device from form data
+        const new_device: Device = {
+            hostname: hostname,
+            mac: mac,
+            ip: deviceIP
+        }
+
+        await send_request(config.backend_url, "update", new_device);
+        setDevices([]);
+    }
+
     return (
         <div style={{
             padding: '10px'
@@ -69,9 +81,20 @@ export const DeviceRegister: React.FC<DeviceRegisterProps> = ({setDevices}) => {
                 <FieldEntry inputData={hostname} setInputData={setHostname} title={"Hostname"}/>
                 <FieldEntry inputData={mac} setInputData={setMac} title={"Mac"}/>
                 <FieldEntry inputData={deviceIP} setInputData={setDeviceIP} title={"IP"}/>
-                <Button variant={"text"} onClick={register_device} sx={{color: '#FFC09F'}}>
-                    Register
-                </Button>
+
+                <Grid size={11} >
+                    <Button variant={"text"} onClick={update_device} sx={{color: '#FFC09F'}}>
+                        Update
+                    </Button>
+                </Grid>
+
+
+                <Grid size={1} >
+                    <Button variant={"text"} onClick={register_device} sx={{color: '#FFC09F',}}>
+                        Register
+                    </Button>
+                </Grid>
+
             </Grid>
 
         </div>

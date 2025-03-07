@@ -48,6 +48,9 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({device, setDevices}) => {
             <div>
                 ip: {device.ip}
             </div>
+            <div>
+                mac: {device.mac}
+            </div>
             <Button variant={"text"} onClick={start_device} sx={{color: '#FFC09F'}}>
                 Start
             </Button>

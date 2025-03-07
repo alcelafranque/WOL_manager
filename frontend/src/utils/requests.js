@@ -28,6 +28,12 @@ const route_mapping = {
         method: "POST",
         content_type: "application/json",
         response_type: "json"
+    },
+    update: {
+        route: "update",
+        method: "POST",
+        content_type: "application/json",
+        response_type: "json"
     }
 }
 

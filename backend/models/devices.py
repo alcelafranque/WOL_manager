@@ -6,7 +6,7 @@ from core.database import get_db
 
 from typing import Self
 
-from sqlalchemy import Column, String
+from sqlalchemy import Column, String, func
 from sqlalchemy.orm import declarative_base
 
 
@@ -61,10 +61,32 @@ class Device(Base):
         """
         db = get_db()
         try:
-            device_instance = db.query(cls).filter(cls.mac == device["mac"]).first()
+            device_instance = db.query(cls).filter(func.lower(cls.mac) == device["mac"].lower()).first()
             db.delete(device_instance)
 
             # Save changes
             db.commit()
+        finally:
+            db.close()
+
+
+    @classmethod
+    def update_device(cls, device: Self) -> None:
+        """
+        Delete device from the database.
+        """
+        db = get_db()
+        try:
+            device_instance = db.query(cls).filter(cls.mac == device["mac"].upper()).first()
+            print(device_instance)
+            print(cls.mac)
+            print(device["mac"])
+
+            if device_instance:
+                device_instance.hostname = device["hostname"]
+                device_instance.ip = device["ip"]
+
+                # Save changes
+                db.commit()
         finally:
             db.close()

@@ -52,3 +52,9 @@ def register_device(device: Device):
 def delete_device(device: Device):
     device.delete()
     return
+
+
+@devices.post("/update")
+def update_device(device: Device):
+    device.update()
+    return
