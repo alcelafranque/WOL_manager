@@ -50,7 +50,7 @@ export const DeviceRegister: React.FC<DeviceRegisterProps> = ({setDevices}) => {
         const new_device: Device = {
             hostname: hostname,
             mac: mac,
-            interface: deviceIP
+            ip: deviceIP
         }
 
         await send_request(config.backend_url, "register", new_device);
