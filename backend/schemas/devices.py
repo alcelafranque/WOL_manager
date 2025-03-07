@@ -1,5 +1,6 @@
 from models.devices import Device as DeviceModel
 
+from ipaddress import IPv4Address, IPv6Address
 from typing import Self
 
 from pydantic import BaseModel, field_validator, AfterValidator
@@ -14,7 +15,7 @@ class Device(BaseModel):
 
     @field_validator('mac', mode="after")
     @classmethod
-    def is_valid(cls, mac: str) -> bool:
+    def is_valid(cls, mac: str) -> str:
         """
         Check if device fields are valid.
         :return: False if any field is invalid else True
@@ -25,6 +26,24 @@ class Device(BaseModel):
             raise ValueError('Invalid MAC address')
 
         return mac.lower()
+
+
+    @field_validator('ip')
+    @classmethod
+    def is_valid_ip(cls, ip: str) -> str:
+        """
+        Check if ip field is valid (v4 or v6).
+        :return: False if ip is invalid else True
+        """
+        try:
+            if IPv4Address(ip):
+                return ip
+        except ValueError:
+            try:
+                if IPv6Address(ip):
+                    return ip
+            except ValueError:
+                raise ValueError('Invalid IP address')
 
 
     @classmethod
