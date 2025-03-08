@@ -4,6 +4,8 @@ services:
   backend:
     build: ./backend
     container_name: wol-backend
+    volumes:
+      - ./backend/core/devices.db:/app/core/devices.db
     environment:
       API_KEY: ${API_KEY}
     network_mode: host
