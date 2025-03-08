@@ -16,3 +16,8 @@ First is a web app whereas second is a telegram bot.
 
 ### Execution
 - Exec `docker compose build && docker compose up -d`
+
+
+## Telegram
+
+This version of the project is under redevelopment.
