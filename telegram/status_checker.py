@@ -1,11 +1,8 @@
-import os
 import sys
 import time
 from io import StringIO
 
 import paramiko
-
-NB_TRY = 6
 
 def status_checker(mac, starting_time, config):
     ssh_filename = config["path_to_private_key"]
