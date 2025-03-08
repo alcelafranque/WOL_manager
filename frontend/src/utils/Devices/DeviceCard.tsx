@@ -1,4 +1,4 @@
-import {Device} from "../types";
+import Device from "../types";
 import React, {useEffect, useState} from "react";
 import {Box} from "@mui/material";
 import {Button} from "@mui/material";

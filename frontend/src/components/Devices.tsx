@@ -6,7 +6,7 @@ import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Grid from '@mui/material/Grid2';
 
-import {Device} from '../utils/types';
+import Device from '../utils/types';
 import {DeviceCard} from "../utils/Devices/DeviceCard";
 import {DeviceRegister} from "../utils/Devices/DeviceRegister";
 

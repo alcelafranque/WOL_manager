@@ -1,4 +1,4 @@
-import {Device} from "../types";
+import Device from "../types";
 import React, {useState} from "react";
 import {Button, TextField} from "@mui/material";
 import Grid from '@mui/material/Grid2';
