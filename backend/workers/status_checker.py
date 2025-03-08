@@ -1,8 +1,6 @@
 import subprocess
 import threading
 
-import nmap
-
 
 class StatusChecker:
 
