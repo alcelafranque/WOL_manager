@@ -23,3 +23,12 @@ services:
     volumes:
       - ./frontend/src/config.d/config.yaml:/usr/share/nginx/html/config/config.yaml
 
+  telegram:
+    build: ./telegram
+    container_name: wol-telegram
+    volumes:
+      - ./telegram/config.yml:/app/config.yml
+    environment:
+      API_KEY: ${API_KEY}
+    network_mode: host
+    restart: unless-stopped
