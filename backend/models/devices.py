@@ -15,9 +15,9 @@ class Device(Base):
     """
 
     __tablename__ = 'devices'
-    hostname = Column(String)
-    mac = Column(String, primary_key=True)
-    ip = Column(String)
+    hostname = Column(String, nullable=False)
+    mac = Column(String, primary_key=True, nullable=False, unique=True)
+    ip = Column(String, nullable=False, unique=True)
 
 
     @classmethod
@@ -74,9 +74,6 @@ class Device(Base):
         db = get_db()
         try:
             device_instance = db.query(cls).filter(cls.mac == device["mac"].upper()).first()
-            print(device_instance)
-            print(cls.mac)
-            print(device["mac"])
 
             if device_instance:
                 device_instance.hostname = device["hostname"]
