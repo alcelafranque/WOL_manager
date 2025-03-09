@@ -14,8 +14,6 @@ services:
   frontend:
     build:
       context: ./frontend
-      args:
-        VITE_API_KEY: ${API_KEY}
     container_name: wol-frontend
     ports:
       - "8080:8080"

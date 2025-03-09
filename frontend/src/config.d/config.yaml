@@ -1,3 +1,4 @@
 routes:
   devices: "devices"
 backend_url: "http://localhost:8000"
+backend_api_key: ""

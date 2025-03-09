@@ -1,3 +1,5 @@
+import config from "../config.d/config.yaml";
+
 const route_mapping = {
     devices: {
         route: "devices",
@@ -43,7 +45,7 @@ export async function send_request(url, target, data){
     const route = route_info["route"];
     const method = route_info["method"];
     const content_type = route_info["content_type"];
-    const apiKey = import.meta.env.VITE_API_KEY;
+    const apiKey = config.backend_api_key;
 
     let request_data = {};
     if (Object.keys(data).length > 0) {
