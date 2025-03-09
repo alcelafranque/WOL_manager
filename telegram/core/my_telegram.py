@@ -1,7 +1,10 @@
+from schemas.devices import Device
+
 import json
 import os
 import re
 import yaml
+
 from telegram.ext import (
     CommandHandler,
     ContextTypes,
@@ -97,114 +100,83 @@ def delete_mac_from_name(name, filename):
     return False
 
 
-async def run_multiple_status(update: Update, device_names):
-    for device in device_names:
-        mac, interface = get_data_from_name(device, name_to_mac_file)
-        started = status_checker(mac, 0, config)
-        if not started:
-            text = f"{device} is down"
-            await update.message.reply_text(text)
-        else:
-            text = f"{device} Up"
-            await update.message.reply_text(text)
-
-async def run_multiple_start(update: Update, device_names):
-    for device in device_names:
-        mac, interface = get_data_from_name(device, name_to_mac_file)
-        wake_me_up(mac, config, interface)
-        text = f"Starting {device}"
-        await update.message.reply_text(text)
-
-
 async def status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     last_message = update.message.text
     if re.match(r"/status\s{1,}[^\s]+\s{0,}", last_message):
         device_name = last_message.split(" ")[-1] if last_message.split(" ")[-1] != "" else last_message.spliti(" ")[-2]
-        if device_name == "all":
-            device_names = get_devices(name_to_mac_file)
-            await run_multiple_status(update, device_names)
+
+        devices = Device.get_devices()
+        selected_device = None
+        for device in devices:
+            if device.hostname == device_name:
+                selected_device = device
+
+        if not selected_device:
+            text = "Device not found"
+            await update.message.reply_text(text)
+            return
+
+        started = Device.get_status(selected_device)
+        if not started:
+            text = "This ressource is down"
+            await update.message.reply_text(text)
         else:
-            mac, interface = get_data_from_name(device_name, name_to_mac_file)
-            started = status_checker(mac, 0, config)
-            if not started:
-                text = "This ressource is down"
-                await update.message.reply_text(text)
-            else:
-                text = f"{device_name} is up"
-                await update.message.reply_text(text)
+            text = f"{device_name} is up"
+            await update.message.reply_text(text)
     else:
         context.user_data["action"] = "status"
-        device_names = get_devices(name_to_mac_file)
-        if device_names:
-            keyboard = [[device] for device in device_names]
-            keyboard[0].append("all")
+        devices = Device.get_devices()
+
+        if devices:
+            keyboard = [[device.hostname] for device in devices]
             reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True)
             await update.message.reply_text(
                 "Which devices to check?:", reply_markup=reply_markup
             )
         else:
-            await update.message.reply_text("Null bitch")
+            await update.message.reply_text("No devices")
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     last_message = update.message.text
-    if re.match(r"/start\s{1,}[^\s]+\s{0,}([0-9]+)?", last_message):
+    if re.match(r"/start\s{1,}[^\s]+\s{0,}", last_message):
         message_text = last_message.split(" ")
-        #starting_time = message_text[-1] if message_text[-1].isdigit() and len(message_text) == 3 else 40
         device_name = message_text[1]
+
+        devices = Device.get_devices()
+
         if device_name == "all":
-            device_names = get_devices(name_to_mac_file)
-            await run_multiple_start(update, device_names)
-        else:
-            mac, interface = get_data_from_name(device_name, name_to_mac_file)
-            if not mac:
-                text = "ERROR: device_name_not_in_database send /devices to print known devices"
-                await update.message.reply_text(text)
-            wake_me_up(mac, config, interface)
-            text = "Starting device"
+            Device.start_device(devices)
+            text = "Starting all devices"
             await update.message.reply_text(text)
+            return
+
+
+        selected_device = None
+        for device in devices:
+            if device.hostname == device_name:
+                selected_device = device
+
+        if not selected_device:
+            text = "Device not found"
+            await update.message.reply_text(text)
+            return
+
+        Device.start_device([selected_device])
+        text = "Starting device"
+        await update.message.reply_text(text)
+
     else:
         context.user_data["action"] = "start"
-        device_names = get_devices(name_to_mac_file)
-        if device_names:
-            keyboard = [[device] for device in device_names]
-            keyboard[0].append("all")
+        devices = Device.get_devices()
+        if devices:
+            keyboard = [[device.hostname] for device in devices]
             reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True)
             await update.message.reply_text(
                 "Which devices to power on:", reply_markup=reply_markup
             )
         else:
-            await update.message.reply_text("Null bitch.")
-
-
-async def select_device(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    device_name = update.message.text
-    mac, interface = get_data_from_name(device_name, name_to_mac_file)
-
-    if not mac and device_name != "all":
-        text = "ERROR: device_name_not_in_database send /devices to print known devices"
-        await update.message.reply_text(text)
-    else:
-        device_names = get_devices(name_to_mac_file)
-        if context.user_data.get("action") == "start":
-            if device_name == "all":
-                await run_multiple_start(update, device_names)
-            else:
-                wake_me_up(mac, config, interface)
-                text = f"Starting {device_name}"
-                await update.message.reply_text(text)
-        elif context.user_data.get("action") == "status":
-            if device_name == "all":
-                await run_multiple_status(update, device_names)
-            else:
-                started = status_checker(mac, 0, config)
-                if not started:
-                    text = f"{device_name} is down"
-                    await update.message.reply_text(text)
-                else:
-                    text = f"{device_name} is up"
-                    await update.message.reply_text(text)
-        context.user_data["action"] = None
+            await update.message.reply_text("No devices")
 
 
 async def help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -214,13 +186,23 @@ async def help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def add(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     last_message = update.message.text
+
     if re.match(r"/add [^\s]+ [^\s]+ [^\s]+", last_message):
-        if is_a_valid_mac_address(last_message):
-            store_new_pair(last_message, name_to_mac_file)
+        message_text = last_message.split(" ")
+
+        data = {
+            "hostname": message_text[1],
+            "mac": message_text[2],
+            "ip": message_text[3]
+        }
+        device = Device(**data)
+
+        if Device.register_device(device):
             text = "Successfully added"
             await update.message.reply_text(text)
+
         else:
-            text = "ERROR: bad_message_format example: /add router_test a1:b6:23:dc:ff:99 eth0"
+            text = "ERROR: bad_message_format example: /add router_test a1:b6:23:dc:ff:99 10.0.0.2"
             await update.message.reply_text(text)
     else:
         await update.message.reply_text("Unknown command\n" + help_text)
@@ -229,7 +211,28 @@ async def add(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def delete(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     last_message = update.message.text
     if re.match(r"/delete [^\s]+", last_message):
-        if delete_mac_from_name(last_message.split(" ")[1], name_to_mac_file):
+        message_text = last_message.split(" ")
+        device_name = message_text[-1]
+
+        devices = Device.get_devices()
+
+        if device_name == "all":
+            Device.delete_device(devices)
+            text = "Deleting all"
+            await update.message.reply_text(text)
+            return
+
+        selected_device = None
+        for device in devices:
+            if device.hostname == device_name:
+                selected_device = device
+
+        if not selected_device:
+            text = "Device not found"
+            await update.message.reply_text(text)
+            return
+
+        if Device.delete_device([selected_device]):
             text = "Device deleted"
             await update.message.reply_text(text)
         else:
