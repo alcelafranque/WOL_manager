@@ -13,9 +13,7 @@ from telegram.ext import (
     filters,
 )
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
-from wake_me_up import *
 
-from status_checker import *
 
 
 help_text = "/add NAME MAC ROUTER_INTERFACE\n\n/delete DEVICE_NAME\n\n/devices\n\n/start DEVICE_NAME STARTING_TIME\n\n/status DEVICE_NAME"
@@ -25,79 +23,6 @@ def get_config():
     with open("./config.yml", "r") as file:
         config = yaml.safe_load(file)
     return config
-
-
-def is_a_valid_mac_address(message_text):
-    splited_message = message_text.split(" ")
-    return (
-        True
-        if re.match(r"([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}", splited_message[2])
-        else False
-    )
-
-
-def store_new_pair(message, filename):
-    """
-
-    :param message:
-    :param filename:
-    :return:
-    """
-    splitted_message = message.split(" ")
-    if not os.path.isfile(filename):
-        with open(filename, "w"):
-            pass
-        name_to_mac = {}
-    else:
-        with open(filename, "r") as file1:
-            try:
-                name_to_mac = json.loads(file1.read())
-            except json.decoder.JSONDecodeError:
-                name_to_mac = {}
-    name_to_mac[splitted_message[1]] = {
-        "mac": splitted_message[2],
-        "interface": splitted_message[3],
-    }
-    with open(filename, "w") as file1:
-        file1.write(json.dumps(name_to_mac))
-
-
-def get_devices(filename):
-    if not os.path.exists(filename):
-        with open(filename, "w") as file1:
-            file1.write("{}")
-    with open(filename) as file1:
-        all_pairs = json.loads(file1.read())
-    return [k for k in all_pairs.keys()]
-
-
-def get_data_from_name(name, filename):
-    """
-    Get mac or interface from name.
-    :param name: str
-    :param filename: str
-    :param data: str (mac | interface)
-    :return: str
-    """
-    if not os.path.exists(filename):
-        return None, None
-    with open(filename, "r") as file1:
-        name_to_mac = json.loads(file1.read())
-    try:
-        return name_to_mac[name]["mac"], name_to_mac[name]["interface"]
-    except:
-        return None, None
-
-
-def delete_mac_from_name(name, filename):
-    with open(filename, "r") as file1:
-        name_to_mac = json.loads(file1.read())
-    if name in name_to_mac.keys():
-        del name_to_mac[name]
-        with open(filename, "w") as file1:
-            file1.write(json.dumps(name_to_mac))
-        return True
-    return False
 
 
 async def status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
