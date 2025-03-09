@@ -1,7 +1,7 @@
 name: build and push images
 on:
   push:
-    branches: ['master']
+    branches: ['master', 'add-pipeline-for-image-creation']
   schedule:
     - cron: 5 8 * * 0
 
