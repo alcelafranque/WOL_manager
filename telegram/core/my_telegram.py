@@ -174,6 +174,40 @@ async def show_devices(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         await update.message.reply_text("\n\n".join(text))
 
 
+async def select_device(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    device_name = update.message.text
+
+    devices = Device.get_devices()
+    selected_device = None
+    for device in devices:
+        if device.hostname == device_name:
+            selected_device = device
+
+    if not selected_device and device_name != "all":
+        text = "ERROR: device_name_not_in_database send /devices to print known devices"
+        await update.message.reply_text(text)
+    else:
+        if context.user_data.get("action") == "start":
+            if device_name == "all":
+                Device.start_device(devices)
+                text = f"Starting all"
+                await update.message.reply_text(text)
+            else:
+                Device.start_device([selected_device])
+                text = f"Starting {device_name}"
+                await update.message.reply_text(text)
+        elif context.user_data.get("action") == "status":
+            started = Device.get_status(selected_device)
+            if not started:
+                text = f"{device_name} is down"
+                await update.message.reply_text(text)
+            else:
+                text = f"{device_name} is up"
+                await update.message.reply_text(text)
+        # TODO: Add delete
+        context.user_data["action"] = None
+
+
 def new_telegram_run():
     global last_message
     # Load config
