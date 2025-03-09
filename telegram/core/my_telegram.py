@@ -19,7 +19,7 @@ help_text = "/add NAME MAC ROUTER_INTERFACE\n\n/delete DEVICE_NAME\n\n/devices\n
 
 
 def get_config():
-    with open("config.yml", "r") as file:
+    with open("./config.yml", "r") as file:
         config = yaml.safe_load(file)
     return config
 
