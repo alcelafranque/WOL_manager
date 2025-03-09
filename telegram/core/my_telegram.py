@@ -166,11 +166,12 @@ async def delete(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text("Unkown command\n" + help_text)
 
 
-async def devices(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def show_devices(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     last_message = update.message.text
     if re.match(r"/devices", last_message):
-        text = get_devices(name_to_mac_file)
-        await update.message.reply_text(text)
+        devices = Device.get_devices()
+        text = [str(device.dict()) for device in devices]
+        await update.message.reply_text("\n\n".join(text))
 
 
 def new_telegram_run():
@@ -189,6 +190,6 @@ def new_telegram_run():
     application.add_handler(CommandHandler("help", help))
     application.add_handler(CommandHandler("delete", delete))
     application.add_handler(CommandHandler("add", add))
-    application.add_handler(CommandHandler("devices", devices))
+    application.add_handler(CommandHandler("devices", show_devices))
 
     application.run_polling()
