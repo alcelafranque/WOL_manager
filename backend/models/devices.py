@@ -74,9 +74,6 @@ class Device(Base):
         db = get_db()
         try:
             device_instance = db.query(cls).filter(cls.mac == device["mac"].upper()).first()
-            print(device_instance)
-            print(cls.mac)
-            print(device["mac"])
 
             if device_instance:
                 device_instance.hostname = device["hostname"]
