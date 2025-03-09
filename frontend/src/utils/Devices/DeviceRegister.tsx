@@ -1,9 +1,12 @@
 import Device from "../types";
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {Button, TextField} from "@mui/material";
 import Grid from '@mui/material/Grid2';
 import {send_request} from "../requests";
-import config from "../../config.d/config.yaml";
+import { loadConfig } from '../configLoader';
+import {Config} from '../types';
+
+
 
 
 interface FieldEntryProps {
@@ -41,32 +44,43 @@ interface DeviceRegisterProps {
 }
 
 export const DeviceRegister: React.FC<DeviceRegisterProps> = ({setToUpdate}) => {
+  const [config, setConfig] = useState<Config>({})
   const [hostname, setHostname] = useState<string>("");
   const [mac, setMac] = useState<string>("");
   const [deviceIP, setDeviceIP] = useState<string>("");
 
-  const register_device = async () => {
-        // Create device from form data
-        const new_device: Device = {
-            hostname: hostname,
-            mac: mac,
-            ip: deviceIP
-        }
+  useEffect(() => {
+        const getConfig = async () => setConfig(await loadConfig());
+        getConfig();
+    }, [])
 
-        await send_request(config.backend_url, "register", new_device);
-        setToUpdate(true);
+  const register_device = async () => {
+
+      if (config) {
+          // Create device from form data
+          const new_device: Device = {
+              hostname: hostname,
+              mac: mac,
+              ip: deviceIP
+          }
+
+          await send_request(config["backend_url"], "register", new_device);
+          setToUpdate(true);
+      }
     }
 
     const update_device = async () => {
-        // Create device from form data
-        const new_device: Device = {
-            hostname: hostname,
-            mac: mac,
-            ip: deviceIP
-        }
+      if (config) {
+          // Create device from form data
+          const new_device: Device = {
+              hostname: hostname,
+              mac: mac,
+              ip: deviceIP
+          }
 
-        await send_request(config.backend_url, "update", new_device);
-        setToUpdate(true);
+          await send_request(config["backend_url"], "update", new_device);
+          setToUpdate(true);
+      }
     }
 
     return (

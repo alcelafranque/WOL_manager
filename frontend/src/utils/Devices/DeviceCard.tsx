@@ -3,7 +3,9 @@ import React, {useEffect, useState} from "react";
 import {Box} from "@mui/material";
 import {Button} from "@mui/material";
 import {send_request} from "../requests";
-import config from "../../config.d/config.yaml";
+import { loadConfig } from '../configLoader';
+import {Config} from '../types';
+
 
 interface DeviceCardProps {
     device: Device;
@@ -11,29 +13,37 @@ interface DeviceCardProps {
 }
 
 export const DeviceCard: React.FC<DeviceCardProps> = ({device, setToUpdate}) => {
-
+    const [config, setConfig] = useState<Config>({})
     const [status, setStatus] = useState(false);
 
     const get_status = async () => {
-        const response = await send_request(config.backend_url, "status", device);
-        const json_response = await response.json();
+        if (config) {
+            const response = await send_request(config["backend_url"], "status", device);
+            const json_response = await response.json();
 
-        if ("status" in json_response)
-        {
-            setStatus(json_response["status"]);
+            if ("status" in json_response)
+            {
+                setStatus(json_response["status"]);
+            }
         }
     }
 
     const start_device = async () => {
-        await send_request(config.backend_url, "start", device);
+        if (config) {
+            await send_request(config["backend_url"], "start", device);
+        }
     }
 
     const delete_device = async () => {
-        await send_request(config.backend_url, "delete", device);
-        setToUpdate(true);
+        if (config) {
+            await send_request(config["backend_url"], "delete", device);
+            setToUpdate(true);
+        }
     }
 
     useEffect(() => {
+        const getConfig = async () => setConfig(await loadConfig());
+        getConfig();
         setInterval(get_status, 10000);
     }, [])
 

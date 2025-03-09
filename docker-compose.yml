@@ -20,3 +20,6 @@ services:
     restart: unless-stopped
     depends_on:
       - backend
+    volumes:
+      - ./frontend/src/config.d/config.yaml:/usr/share/nginx/html/config/config.yaml
+

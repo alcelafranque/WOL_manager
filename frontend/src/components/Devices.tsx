@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {send_request} from "../utils/requests";
-import config from "../config.d/config.yaml";
+import { loadConfig } from '../utils/configLoader';
+import {Config} from '../utils/types';
 
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
@@ -16,11 +17,17 @@ interface DevicesProps {
 }
 
 export const Devices: React.FC<DevicesProps> = () => {
+    const [config, setConfig] = useState<Config>({})
     const [devices, setDevices] = useState<Array<Device>>([]);
     const [toUpdate, setToUpdate] = useState(true);
 
+    useEffect(() => {
+        const getConfig = async () => setConfig(await loadConfig());
+        getConfig();
+    }, [])
+
     const get_devices = async () => {
-        const response = await send_request(config.backend_url, "devices", {});
+        const response = await send_request(config["backend_url"], "devices", {});
         const json_response = await response.json();
 
         if ("devices" in json_response)
@@ -32,7 +39,9 @@ export const Devices: React.FC<DevicesProps> = () => {
     useEffect(() => {
         if (toUpdate) {
             setToUpdate(false);
-            get_devices();
+            if (config) {
+                get_devices();
+            }
         }
     }, [toUpdate])
 
