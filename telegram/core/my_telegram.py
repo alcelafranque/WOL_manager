@@ -15,8 +15,7 @@ from telegram.ext import (
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
 
 
-
-help_text = "/add NAME MAC ROUTER_INTERFACE\n\n/delete DEVICE_NAME\n\n/devices\n\n/start DEVICE_NAME STARTING_TIME\n\n/status DEVICE_NAME"
+help_text = "/add NAME MAC IP\n\n/delete DEVICE_NAME\n\n/devices\n\n/start DEVICE_NAME\n\n/status DEVICE_NAME"
 
 
 def get_config():
