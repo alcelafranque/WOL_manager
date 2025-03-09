@@ -250,12 +250,10 @@ async def devices(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 
 def new_telegram_run():
-    global ssh_file, bot_token, ssh_password, name_to_mac_file, last_message, config
+    global last_message
+    # Load config
     config = get_config()
-    ssh_file = config["path_to_private_key"]
     bot_token = config["bot_token"]
-    ssh_password = config["ssh_password"]
-    name_to_mac_file = config["name_to_mac_file"]
 
     application = ApplicationBuilder().token(bot_token).read_timeout(10).build()
 
