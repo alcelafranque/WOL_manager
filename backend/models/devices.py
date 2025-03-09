@@ -15,9 +15,9 @@ class Device(Base):
     """
 
     __tablename__ = 'devices'
-    hostname = Column(String)
-    mac = Column(String, primary_key=True)
-    ip = Column(String)
+    hostname = Column(String, nullable=False)
+    mac = Column(String, primary_key=True, nullable=False, unique=True)
+    ip = Column(String, nullable=False, unique=True)
 
 
     @classmethod
