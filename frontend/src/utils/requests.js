@@ -47,8 +47,14 @@ export async function send_request(url, target, data){
     const content_type = route_info["content_type"];
 
     // Load config
-    const config = await loadConfig();
-    const apiKey = config.backend_api_key;
+    const apiKeyResponse = await fetch(url.replace() + "/apiKey", {
+        method: "GET",
+        headers: {
+            "Content-Type": "json",
+            "Cache-Control" : 'no-cache, no-store, must-revalidate',
+        }
+    });
+    const apiKey = await apiKeyResponse.json();
 
     let request_data = {};
     if (Object.keys(data).length > 0) {
@@ -57,7 +63,7 @@ export async function send_request(url, target, data){
             headers: {
                 "Content-Type": content_type,
                 "Cache-Control" : 'no-cache, no-store, must-revalidate',
-                "X-API-Key": apiKey
+                "X-API-Key": apiKey.apiKey
             },
             body: JSON.stringify(data)
         }
@@ -65,7 +71,7 @@ export async function send_request(url, target, data){
         request_data = {
             method: method,
             headers: {
-                "X-API-Key": apiKey
+                "X-API-Key": apiKey.apiKey
             },
         }
     }

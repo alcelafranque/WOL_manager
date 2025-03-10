@@ -48,15 +48,19 @@ export const DeviceRegister: React.FC<DeviceRegisterProps> = ({setToUpdate}) => 
   const [hostname, setHostname] = useState<string>("");
   const [mac, setMac] = useState<string>("");
   const [deviceIP, setDeviceIP] = useState<string>("");
+  const [configResolved, setConfigResolved] = useState(false);
 
   useEffect(() => {
-        const getConfig = async () => setConfig(await loadConfig());
+        const getConfig = async () => {
+            setConfig(await loadConfig());
+            setConfigResolved(true);
+        };
         getConfig();
     }, [])
 
   const register_device = async () => {
 
-      if (config) {
+      if (configResolved) {
           // Create device from form data
           const new_device: Device = {
               hostname: hostname,
@@ -70,7 +74,7 @@ export const DeviceRegister: React.FC<DeviceRegisterProps> = ({setToUpdate}) => 
     }
 
     const update_device = async () => {
-      if (config) {
+      if (configResolved) {
           // Create device from form data
           const new_device: Device = {
               hostname: hostname,

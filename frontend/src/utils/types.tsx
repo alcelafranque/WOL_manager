@@ -6,6 +6,5 @@ export default interface Device {
 
 export interface Config {
     backend_url?: string,
-    routes?: Array<Object>,
-    backend_api_key?: string
+    routes?: Array<Object>
 }

@@ -19,10 +19,14 @@ interface DevicesProps {
 export const Devices: React.FC<DevicesProps> = () => {
     const [config, setConfig] = useState<Config>({})
     const [devices, setDevices] = useState<Array<Device>>([]);
-    const [toUpdate, setToUpdate] = useState(true);
+    const [toUpdate, setToUpdate] = useState(false);
 
     useEffect(() => {
-        const getConfig = async () => setConfig(await loadConfig());
+        const getConfig = async () => {
+            const new_config = await loadConfig();
+            setConfig(new_config)
+            setToUpdate(true);
+        };
         getConfig();
     }, [])
 
@@ -38,10 +42,10 @@ export const Devices: React.FC<DevicesProps> = () => {
 
     useEffect(() => {
         if (toUpdate) {
-            setToUpdate(false);
-            if (config) {
+            if (Object.keys(config).length > 0) {
                 get_devices();
             }
+            setToUpdate(false);
         }
     }, [toUpdate])
 
