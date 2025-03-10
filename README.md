@@ -14,9 +14,6 @@ First is a web app, second is a telegram bot.
 - Fulfil `backend/config.d/config.yml` network field with your bot-id.
 - Feel free to change default path of database_url
 
-### Execution
-- Exec `docker compose build && docker compose up -d`
-
 
 ## Telegram
 
@@ -29,5 +26,5 @@ First is a web app, second is a telegram bot.
 - Fulfil `backend/config.d/config.yml` network field with your
 - Talk to the bot using `/help` and see actions.
 
-### Execution
+## Execution
 - Exec `docker compose build && docker compose up -d`
