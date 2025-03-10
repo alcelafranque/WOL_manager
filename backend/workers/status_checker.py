@@ -6,7 +6,6 @@ class StatusChecker:
 
     def __init__(self, network: str):
         self.devices = []
-        self.mapping = {}
         self.devices_status = {}
         self.network = network
         self.running = False
@@ -60,18 +59,9 @@ class StatusChecker:
                         if mac and mac in targeted_mac:
                             status = parts[-1] if len(parts) > 5 else ""
 
-                            # Store mac along its IP
-                            ip = parts[0]
-                            self.mapping[mac] = ip
-
                             # Check for status
                             self.devices_status[mac] = True if status == "REACHABLE" else False
                             targeted_mac.remove(mac)
-
-            # mac not in ARP table
-            for mac in targeted_mac:
-                self.devices_status[mac] = False
-                self.mapping[mac] = None
 
         except subprocess.CalledProcessError:
             return
@@ -82,6 +72,4 @@ class StatusChecker:
         Keep device in ARP table avoiding STALE, DELAY... states.
         """
         for device in self.devices:
-            if not device.mac in self.mapping.keys() or not self.mapping[device.mac]:
-                continue
             subprocess.run(['ping', '-c', '1', device.ip, '-W', '1'], stdout=subprocess.DEVNULL)

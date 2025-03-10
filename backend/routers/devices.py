@@ -27,8 +27,6 @@ def retrieve_devices(api_key: APIKey = Depends(get_api_key)):
 
 @devices.post("/status")
 def get_status(device: Device, api_key: APIKey = Depends(get_api_key)):
-    if device.mac not in status_checker.mapping.keys():
-        return {"status": False}
     status = status_checker.devices_status[device.mac]
     return {"status": status}
 
