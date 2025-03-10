@@ -15,6 +15,7 @@ interface DeviceCardProps {
 export const DeviceCard: React.FC<DeviceCardProps> = ({device, setToUpdate}) => {
     const [config, setConfig] = useState<Config>({})
     const [status, setStatus] = useState(false);
+    const [configResolved, setConfigResolved] = useState(false);
 
     const get_status = async () => {
         if (config) {
@@ -44,8 +45,12 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({device, setToUpdate}) => 
     useEffect(() => {
         const getConfig = async () => setConfig(await loadConfig());
         getConfig();
-        setInterval(get_status, 10000);
-    }, [])
+        setConfigResolved(true);
+
+        if (configResolved) {
+            setInterval(get_status, 10000);
+        }
+    }, [configResolved])
 
     return (
         <Box>
