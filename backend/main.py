@@ -1,4 +1,5 @@
 from routers.devices import devices as devices_router, status_checker
+from routers.auth import auth as auth_router
 from schemas.devices import Device
 
 from contextlib import asynccontextmanager
@@ -20,6 +21,7 @@ app = FastAPI(lifespan=lifespan)
 
 # Add routers to main app
 app.include_router(devices_router)
+app.include_router(auth_router)
 
 # Set CORS settings
 origins = [
