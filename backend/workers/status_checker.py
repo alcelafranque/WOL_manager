@@ -63,6 +63,10 @@ class StatusChecker:
                             self.devices_status[mac] = True if status == "REACHABLE" else False
                             targeted_mac.remove(mac)
 
+            for device in self.devices:
+                if device.mac not in self.devices_status.keys():
+                    self.devices_status[device.mac] = False
+
         except subprocess.CalledProcessError:
             return
 
