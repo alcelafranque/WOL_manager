@@ -31,7 +31,7 @@ app.add_middleware(
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["OPTIONS", "GET", "POST"],
-    allow_headers=["OPTIONS", "GET", "POST", "X-API-Key"]
+    allow_headers=["OPTIONS", "GET", "POST", "X-API-Key", "Cache-Control"],
 )
 
 

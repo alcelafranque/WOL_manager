@@ -56,6 +56,7 @@ export async function send_request(url, target, data){
             method: method,
             headers: {
                 "Content-Type": content_type,
+                "Cache-Control" : 'no-cache, no-store, must-revalidate',
                 "X-API-Key": apiKey
             },
             body: JSON.stringify(data)
