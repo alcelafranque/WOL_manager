@@ -18,34 +18,35 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({device, setToUpdate}) => 
     const [configResolved, setConfigResolved] = useState(false);
 
     const get_status = async () => {
-        if (config) {
-            const response = await send_request(config["backend_url"], "status", device);
-            const json_response = await response.json();
+        const response = await send_request(config["backend_url"], "status", device);
+        const json_response = await response.json();
 
-            if ("status" in json_response)
-            {
-                setStatus(json_response["status"]);
-            }
+        if ("status" in json_response)
+        {
+            setStatus(json_response["status"]);
         }
     }
 
     const start_device = async () => {
-        if (config) {
+        if (configResolved) {
             await send_request(config["backend_url"], "start", device);
         }
     }
 
     const delete_device = async () => {
-        if (config) {
+        if (configResolved) {
             await send_request(config["backend_url"], "delete", device);
             setToUpdate(true);
         }
     }
 
     useEffect(() => {
-        const getConfig = async () => setConfig(await loadConfig());
+        const getConfig = async () => {
+            setConfig(await loadConfig());
+            setConfigResolved(true);
+        }
         getConfig();
-        setConfigResolved(true);
+
 
         if (configResolved) {
             setInterval(get_status, 10000);
