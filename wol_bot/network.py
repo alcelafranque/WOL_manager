@@ -15,9 +15,13 @@ def wake(mac: str, broadcast_address: str, port: int) -> None:
 
 
 async def _run(*args: str, timeout: float) -> tuple[int, str]:
-    process = await asyncio.create_subprocess_exec(
-        *args, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL
-    )
+    try:
+        process = await asyncio.create_subprocess_exec(
+            *args, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL
+        )
+    except FileNotFoundError:
+        log.error("%s is not installed", args[0])
+        return -1, ""
     try:
         stdout, _ = await asyncio.wait_for(process.communicate(), timeout)
     except TimeoutError:
