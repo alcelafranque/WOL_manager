@@ -35,6 +35,12 @@ docker compose up -d
 The bot must run on a host of the network where the devices live: it uses host
 networking to broadcast magic packets and to check the neighbour table.
 
+`ping` has the `CAP_NET_RAW` file capability, because host networking uses the
+`net.ipv4.ping_group_range` of the host, which often excludes unprivileged
+users. On Kubernetes, keep `NET_RAW` in the container capabilities and
+`allowPrivilegeEscalation: true`, otherwise file capabilities are ignored and
+the status falls back to the neighbour table only.
+
 ### Settings
 
 | Variable | Default | Description |
