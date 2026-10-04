@@ -38,3 +38,7 @@ def test_is_up_falls_back_to_neighbour_table(monkeypatch):
 def test_run_kills_on_timeout():
     code, output = asyncio.run(network._run("sleep", "5", timeout=0.2))
     assert (code, output) == (-1, "")
+
+
+def test_run_reports_missing_command():
+    assert asyncio.run(network._run("wol-bot-missing-command", timeout=1)) == (-1, "")
