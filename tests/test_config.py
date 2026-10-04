@@ -7,7 +7,7 @@ def test_defaults():
     settings = Settings.from_env({"TELEGRAM_BOT_TOKEN": "123:abc", "ALLOWED_USER_IDS": "1, 22,333"})
     assert settings.bot_token == "123:abc"
     assert settings.allowed_user_ids == {1, 22, 333}
-    assert settings.database_path == "/data/devices.db"
+    assert settings.database_path == "devices.db"
     assert settings.broadcast_address == "255.255.255.255"
     assert settings.wol_port == 9
 
