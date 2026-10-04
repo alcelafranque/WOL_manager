@@ -1,0 +1,4 @@
+*
+!requirements.txt
+!wol_bot/
+wol_bot/**/__pycache__
