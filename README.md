@@ -49,7 +49,7 @@ the status falls back to the neighbour table only.
 | `ALLOWED_USER_IDS` | *(empty)* | Comma-separated Telegram user IDs allowed to use the bot. |
 | `WOL_BROADCAST_ADDRESS` | `255.255.255.255` | Destination of magic packets, e.g. the broadcast address of another subnet. |
 | `WOL_PORT` | `9` | UDP port of magic packets. |
-| `DATABASE_PATH` | `/data/devices.db` | SQLite database of registered devices. |
+| `DATABASE_PATH` | `devices.db`, `/data/devices.db` in the image | SQLite database of registered devices. |
 | `LOG_LEVEL` | `INFO` | Python log level. |
 
 The database keeps the layout of previous versions. To keep your devices, copy
@@ -69,4 +69,9 @@ ruff check . && ruff format --check .
 pytest
 ```
 
-Run the bot locally with `python -m wol_bot`, with the variables above exported.
+Run the bot locally, the database is created in the current directory:
+
+```bash
+set -a && . ./.env && set +a
+python -m wol_bot
+```

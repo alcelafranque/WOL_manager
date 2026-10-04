@@ -16,7 +16,7 @@ class ConfigError(Exception):
 class Settings:
     bot_token: str
     allowed_user_ids: frozenset[int]
-    database_path: str = "/data/devices.db"
+    database_path: str = "devices.db"
     broadcast_address: str = "255.255.255.255"
     wol_port: int = 9
 

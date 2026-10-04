@@ -17,5 +17,6 @@ RUN useradd --system --uid 1000 --home-dir /app wol \
 USER wol
 VOLUME /data
 
-ENV PYTHONUNBUFFERED=1
+ENV PYTHONUNBUFFERED=1 \
+    DATABASE_PATH=/data/devices.db
 CMD ["python", "-m", "wol_bot"]
